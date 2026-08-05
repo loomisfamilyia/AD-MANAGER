@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Chart color roles.
+ *
+ * Series colors are declared here rather than in Tailwind because each one has
+ * a light step and a dark step, and the chart body should be written against
+ * the role (`--series-meta`) rather than the hex. Values are the validated
+ * default palette; the first three categorical slots are the ones that clear
+ * the all-pairs colorblind floors in both modes, which is exactly why there
+ * are three platforms and not eight.
+ *
+ * Slot assignment (fixed — never cycle, never reassign by rank):
+ *   slot 1 blue   -> Meta
+ *   slot 2 orange -> Reddit
+ *   slot 3 aqua   -> Google
+ */
+@layer base {
+  :root {
+    --surface-1: #fcfcfb;
+    --plane: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --baseline: #c3c2b7;
+
+    --series-meta: #2a78d6;
+    --series-reddit: #eb6834;
+    --series-google: #1baf7a;
+
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+
+    --delta-good: #006300;
+  }
+
+  .dark {
+    --surface-1: #1a1a19;
+    --plane: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+
+    --series-meta: #3987e5;
+    --series-reddit: #d95926;
+    --series-google: #199e70;
+
+    --delta-good: #0ca30c;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-plane text-ink-primary antialiased;
+    @apply dark:bg-surface-planeDark dark:text-ink-primaryDark;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-surface-dark;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-offset-surface-dark;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-lg border border-status-critical/40 bg-white px-3 py-1.5 text-sm font-medium text-status-critical transition hover:bg-status-critical/10 focus:outline-none focus:ring-2 focus:ring-status-critical disabled:opacity-60 dark:bg-transparent;
+  }
+  .field {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:ring-brand-900;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300;
+  }
+  .card {
+    @apply rounded-xl border border-black/10 bg-surface-light p-4 shadow-sm dark:border-white/10 dark:bg-surface-dark;
+  }
+  /* Columns of figures must align vertically; standalone hero numbers must not. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
