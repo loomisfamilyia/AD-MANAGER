@@ -640,7 +640,14 @@ Nobody fills in a form to start. The world begins the moment they arrive,
 and it's kept on the device until they choose to save. When they tap
 **Save**, after their third thing (a gentle, one-time Roxie prompt), or when
 they first try to message Loomis or send a quote request, the Save sheet
-offers two choices:
+opens with **our privacy promise**. Roxie sits beside a gold padlock: *"Your
+world is safe with us."* Six plain promises follow: we lock it up, we never
+sell it, we share it only to get you insurance, only your Loomis team can see
+it, it's yours, and we'll tell you if something goes wrong. The exact copy,
+and the proof behind every line, is in [PRIVACY_PROMISE.md](PRIVACY_PROMISE.md).
+Trust comes *before* the ask.
+
+Then the Save sheet offers two choices:
 
 | Choice | What happens | Coming back |
 |---|---|---|

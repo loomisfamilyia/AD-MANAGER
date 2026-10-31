@@ -177,6 +177,9 @@ The client can't produce a gold shield even with a modified app.
 
 ## 5. Security and privacy
 
+Every control below backs a line of the client-facing
+[privacy promise](PRIVACY_PROMISE.md), which maps each promise to its proof.
+
 This app holds a family's names, birthdates, addresses, vehicles, and photos
 and values of their valuables. That's a burglar's shopping list and an
 identity thief's starter kit, so the posture is "deny by default, prove it
@@ -401,6 +404,11 @@ it's only as good as its lead data. The risk manager is a lead source:
    trigger there attributes it to the campaign automatically.
 3. Keep the two Supabase projects separate, as the Ads Manager README
    recommends. The function holds the Ads Manager's service key as a secret.
+4. **Never send client data onward to the ad platforms**: no customer lists,
+   no offline-conversion uploads, not even hashed emails. The client-facing
+   privacy promise says "no ad trackers" and "we never sell it"
+   ([PRIVACY_PROMISE.md](PRIVACY_PROMISE.md) §3), and attribution works without
+   it.
 
 ---
 

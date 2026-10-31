@@ -33,6 +33,7 @@ the public-records card and the agency replies are labeled demo data.
 | [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) | **Start here.** Pillars, the core loop, the world, controls and accessibility, the "juice" (animation, sound, pacing), every category, Protect mode, budget, Loomis HQ, the first three minutes, tone of voice, and the decisions we need from Loomis. |
 | [docs/TECHNICAL_DESIGN.md](docs/TECHNICAL_DESIGN.md) | Architecture, Lovable integration, data model, security and privacy, auth, edge functions, the Ads Manager tie-in, installing the schema, testing. |
 | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) | Milestones M1–M5 broken into tickets, each assigned to the cheapest model that can do it (Opus, Sonnet or Haiku). |
+| [docs/PRIVACY_PROMISE.md](docs/PRIVACY_PROMISE.md) | **For Loomis and your attorney.** The plain-words privacy promise clients see right before creating an account, the proof behind every line, the rules that keep it true, and an outline of the formal privacy notice. |
 | [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) | Research: Zillow, property-data APIs, county records, VIN decoding and scanning, address search, Supabase auth, mobile-web facts, and regulatory notes. |
 | [docs/COVERAGE_TREE.md](docs/COVERAGE_TREE.md) | **For Loomis staff to review.** Every line, coverage and question a client will see, generated from the catalog, with "We write this" checkboxes. |
 | [src/catalog/](src/catalog) | The catalog as TypeScript, ready to copy into the Lovable site: lines, categories, thing kinds and their questions, coverages, life events, and a validator. |
@@ -64,6 +65,7 @@ npm run typecheck       # catalog types
 | **New York and Pennsylvania rules are built in.** NY no-fault PIP and SUM; PA first party benefits, full vs. limited tort, stacking, and mine subsidence. Out-of-state clients can build, then get a friendly "message us". | Loomis is licensed in NY and PA. A generic "PIP" card would be wrong in both. |
 | **Roxie is the guide, not the advisor.** She welcomes, gives tips, celebrates, and carries requests to HQ. | Advice comes from a licensed agent. |
 | **"Response times may vary — we'll get to you ASAP."** | No promise the team can't keep yet. |
+| **A privacy promise comes right before account creation**: "We never sell it. Ever. We share it only to get you insurance." Every line is backed by a control in the code. | Loomis's idea. It says "never sell" rather than "never share", because quoting requires sending information to insurers. A promise that's literally true builds more trust, and an untrue one is a legal risk. |
 | **No Zillow.** Use a property-data provider (RentCast, with ATTOM as fallback) for the "we found your house" moment. | Zillow's data isn't realistically available to an agency. Records are shown as "Is this right?", never saved silently. |
 | **No price estimates in v1.** The budget records what the client *wants* to spend per line. | A wrong price in a game is worse than none. Real prices come from carriers through the agent. |
 | **No SSNs, license numbers, health details or bank info.** | Collect what's needed to quote, not to bind. That shrinks the damage if anything ever leaks. |
@@ -105,6 +107,9 @@ Decisions so far are recorded in
 - **Confirm earthquake and event coverage** can actually be placed (in
   [COVERAGE_TREE.md](docs/COVERAGE_TREE.md)).
 - **Brand colors**, if Loomis has official ones.
+- **Approve the privacy promise** with your attorney
+  ([PRIVACY_PROMISE.md](docs/PRIVACY_PROMISE.md)), and have them draft the
+  formal privacy notice to match it.
 - **Counsel and E&O review**, using the New York and Pennsylvania checklist
   in [TECHNICAL_DESIGN.md §5.4](docs/TECHNICAL_DESIGN.md#54-regulatory-checklist-confirm-with-counsel-and-the-eo-carrier).
 - **Staff names and photos**, whenever you're ready.

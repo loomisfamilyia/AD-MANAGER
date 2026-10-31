@@ -73,7 +73,8 @@ basic questions, and come back tomorrow to find them there.
 | M1-6 | Add flow engine driven by the catalog: category grid → kinds → one question per screen, all question types except photo/VIN/address; autosave per answer; "Skip" and "I don't know" | Sonnet | L → split by question type | Adding any catalog kind works without kind-specific code |
 | M1-7 | The placement sequence and first-time reveals (house rises, driveway) | Sonnet | M | Matches GAME_DESIGN.md §6.1 timing; tappable throughout |
 | M1-8 | "My stuff" list view and thing detail sheet (view, edit, delete with Undo) | Sonnet | M | Full parity with the map; screen-reader pass |
-| M1-9 | Security review of M1 | Lead | S | No `dangerouslySetInnerHTML`; no secrets in `VITE_`; no pixels in `/my-world` |
+| M1-9 | Privacy promise: the first screen of the Save sheet, the "🔒 Our privacy promise" menu item, and a public page on the site — copy exactly as in PRIVACY_PROMISE.md, plus `roxie-guard` art when it arrives | Sonnet | S | Copy matches the approved document word for word; readable at 130% text size |
+| M1-10 | Security review of M1 | Lead | S | No `dangerouslySetInnerHTML`; no secrets in `VITE_`; no pixels in `/my-world` |
 
 ## M2 · "Homestead" — the deep tree
 
@@ -128,7 +129,7 @@ Goal: staff can run the inbox and turn shields gold.
 | M5-3 | PWA: manifest, icons, offline shell, install prompt | Sonnet | S |
 | M5-4 | Accessibility audit: axe, VoiceOver, TalkBack, 130% text, reduced motion | Sonnet + Lead | M |
 | M5-5 | Device lab with real people: one 8-year-old (with a parent), one 80-year-old, everyone in between | Loomis | — |
-| M5-6 | Counsel + E&O review (TECHNICAL_DESIGN.md §5.4) | Loomis | — |
+| M5-6 | Counsel + E&O review (TECHNICAL_DESIGN.md §5.4), including approval of the privacy promise and the formal privacy notice that must match it (PRIVACY_PROMISE.md §4) | Loomis | — |
 | M5-7 | `nightly-cleanup` and backups / point-in-time recovery | Lead | S |
 | M5-8 | Beta with ~10 friendly clients; fix the top five frustrations | Everyone | — |
 
