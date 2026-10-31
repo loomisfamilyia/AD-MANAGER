@@ -166,12 +166,20 @@ These are the biggest "wow" moments, so each happens once per world:
   them that fills as their profile gets stronger.
 - **Family and pets** — appear in the yard and wander a little. People get
   avatars picked the same way.
-- **Loomis HQ staff** — real photos of the real Loomis family and team inside
-  HQ and on every reply. This is a family agency; the faces are the brand.
-- **A guide** (optional) — a small original mascot who gives tips in speech
-  bubbles during onboarding and when the player looks stuck. Recommendation:
-  keep the guide to onboarding and tips, and let the real Loomis people handle
-  anything that sounds like advice. Mascot design is an open decision (§13).
+- **Loomis HQ staff** — replies come from "Your Loomis agent" for now. Names
+  and photos can come later; this is a family agency, and the faces will be
+  the brand.
+- **Roxie, the guide** — the Loomis family's small, shaggy grey dog with
+  floppy ears. She wears a Loomis-blue collar with a little gold shield-shaped
+  tag, which is her signature and keeps her distinct from clients' own dogs.
+  Roxie lives at Loomis HQ and sits beside it on every map. She greets new
+  players, gives tips in speech bubbles, cheers at level-ups, and carries
+  quote requests and saved worlds across the map to HQ in her mouth.
+  Personality: cheerful, loyal, a little goofy, never frantic.
+
+  Roxie's job is onboarding, tips and celebration. Anything that sounds like
+  insurance advice comes from a licensed Loomis agent, not from Roxie. Her
+  poses are listed in the art guide (`risk-manager/art/`).
 
 ---
 
@@ -344,7 +352,7 @@ Rewards match effort, and repeat rewards get quieter so the big ones stay big:
 | Completing a thing (ring hits 100%) | The thing gets a little gleam that stays |
 | Finishing a quest | Checkmark draws itself, chime, banner |
 | Level up | Full-screen banner, fanfare, the sky changes |
-| Sending a quote request | Paper plane flies across the world to HQ; HQ's flag waves |
+| Sending a quote request | Roxie trots the envelope across the world to HQ; HQ's flag waves |
 | Loomis verifies a policy | **The biggest moment in the game:** gold light washes over every covered thing, and their shields turn solid gold |
 
 ### 6.3 Sound palette
@@ -525,7 +533,7 @@ Tapping a thing in Protect mode opens its coverages, one card each:
   catalog's tiers are general education ("most families in this situation
   carry it"), not personalized advice — the recommendation comes from a
   licensed Loomis agent reviewing the plan.
-- Coverages for the whole household (umbrella, identity theft, travel) live
+- Coverages for the whole household (umbrella, personal cyber, travel) live
   on a "Whole family" card reached from the Protect screen.
 - A **plan summary** shows: how many things have a plan, Need vs. Want by
   line, and two big buttons: **Set my budget** and **Send to Loomis**.
@@ -589,15 +597,22 @@ guilt. All of them work; none of them belong in a family agency's app.
   💬 button).
 - **A single conversation thread** with the agency: big text box, big send
   button, quick chips (*"I have a question"*, *"Can you call me?"*, *"Please
-  review my plan"*). Replies from real people show their photo and name.
-  Unread replies put a badge on HQ.
+  review my plan"*). Replies come from "Your Loomis agent". Unread replies
+  put a badge on HQ.
 - **Request a quote:** a summary of the plan grouped by line (Need vs. Want +
-  budget), an optional note, then **Send to Loomis**. The sheet closes, a
-  paper plane flies from the bottom of the screen in an arc to HQ, the flag
-  waves, a chime plays. The thread shows *"📋 Quote request sent: Auto, Home,
-  Umbrella"*; the shields on everything in it start pulsing "Quote requested".
-- **Expectations shown honestly:** office hours and a "we usually reply
-  within one business day" line (whatever the agency can actually keep).
+  budget), an optional note, then **Send to Loomis**. The sheet closes, Roxie
+  trots the envelope across the world to HQ, the flag waves, and a chime
+  plays. The thread shows *"📋 Quote request sent: Auto, Home, Umbrella"*;
+  the shields on everything in it start pulsing "Quote requested".
+- **Expectations, shown honestly:** *"Response times may vary — we'll get to
+  you ASAP."* No promised turnaround until the team chooses one.
+- **Where Loomis can help:** Loomis is licensed in **New York and
+  Pennsylvania**. A client whose home is elsewhere can still build their
+  whole world. Instead of a quote button, they see a friendly *"Loomis is
+  licensed in New York and Pennsylvania — message us and we'll talk about
+  options."* State-specific coverages appear from the home's state: no-fault
+  PIP and SUM in New York; first party benefits, full vs. limited tort,
+  stacking and mine subsidence in Pennsylvania.
 - **Notifications:** an email when Loomis replies (*"You have a new message
   from Loomis"* — no details in the email). Web push for home-screen installs
   is a later addition.
@@ -609,18 +624,32 @@ guilt. All of them work; none of them belong in a family agency's app.
 | Beat | Screen | The player feels |
 |---|---|---|
 | 0:00 | Sky. Clouds slowly part to reveal a small circle of grass and… you. | Curious |
-| 0:10 | Guide: *"Welcome! This is your world. Let's fill it with the people and things you love — then we'll help you protect them."* One button: **Let's begin**. | Welcomed |
+| 0:10 | Roxie trots in from HQ: *"Hi! I'm Roxie, the Loomis family's dog. This is your world. Let's fill it with the people and things you love — then we'll help you protect them."* One button: **Let's begin**. | Welcomed |
 | 0:20 | Pick an avatar, type your first name. | It's mine |
 | 0:40 | Quest: *Add your home.* Address → "Looking up public records…" → "We found: built 1978…" → **Looks right**. | That was easy |
 | 1:20 | The house rises out of the ground. Dust, pop, chime. *"Your world grew! Welcome to Homestead."* | Delight |
 | 1:40 | Quest: *Add your people.* A spouse, a kid. They pop into the yard and wave. A family tree sprouts. | Warmth |
 | 2:30 | Quest: *Add a vehicle.* VIN → "Found it! 2019 Honda CR-V." A driveway appears. | Magic |
-| 3:00 | Loomis HQ's flag waves for the first time: *"Hi! We're the Loomis family. We're right here whenever you want us."* | Trust |
+| 3:00 | Loomis HQ's flag waves for the first time, and Roxie wags beside it: *"That's Loomis HQ. The Loomis family is right there whenever you want them."* | Trust |
 
-Sign-up happens **after** the delight, not before: the world can be started
-right away and saved to an account with a typed email code when the player
-wants to keep it (TECHNICAL_DESIGN.md §6). Messaging and quote requests need
-the saved account.
+Sign-up happens **after** the delight, not before. See §12.1.
+
+### 12.1 Saving
+
+Nobody fills in a form to start. The world begins the moment they arrive,
+and it's kept on the device until they choose to save. When they tap
+**Save**, after their third thing (a gentle, one-time Roxie prompt), or when
+they first try to message Loomis or send a quote request, the Save sheet
+offers two choices:
+
+| Choice | What happens | Coming back |
+|---|---|---|
+| **Make a free login** (recommended, shown first) | Type an email, get a 6-digit code, type it in. The world is now theirs on any device. | Email → code → back in their world. |
+| **No thanks — just send it to Loomis** | A plain explanation first: *"We'll save your world with Loomis and reach out. Without a login, you won't be able to open it again yourself — just call or message us and we'll pick up right where you left off."* Then: name, phone and/or email, best way to reach them (Call / Text / Email), an optional note. Roxie carries it to HQ, and the app signs out of that device. | Only by talking to Loomis, exactly as if they'd filled out a form. Staff can attach the world to a login later. |
+
+The no-login path is the right call for people who will never remember a
+login. It still gets their whole household to the agency, and Loomis calls
+them. It also leaves nothing behind on a shared family computer.
 
 ---
 
@@ -641,20 +670,25 @@ small, underneath, for those who want them.
 
 ---
 
-## 14. Decisions needed from Loomis
+## 14. Decisions
 
-1. **States** the agency is licensed in (affects auto minimums, PIP/no-fault
-   copy, anti-rebating limits, data-security law).
-2. **Lines written** — review the checkboxes in
-   [COVERAGE_TREE.md](COVERAGE_TREE.md). Lines you don't write still appear,
-   but say "Ask Loomis about this" instead of offering a quote.
-3. **Guide mascot** — none, an original mascot, or the Loomis family as
-   illustrated characters? (Recommendation: real faces at HQ, a small original
-   mascot for onboarding tips.)
-4. **Art** — commission an illustrator (recommended: one style, ~80–100
-   assets), license an icon set, or stay minimal for the beta.
-5. **Reply promise** — what response time can the team actually keep? The app
-   will display it.
-6. **Who's staff** — names and photos for HQ, and who answers the inbox.
-7. **Anonymous start** — let people build before giving an email
-   (recommended), or require an account first?
+Made by Loomis on 2026-10-31:
+
+| Question | Decision |
+|---|---|
+| States | Licensed in **New York and Pennsylvania** for life and property & casualty, personal and commercial. |
+| Lines written | Every P&C personal line, life, plus **trip, flood, pet and cyber**. Accident & health lines (disability, long-term care, health, Medicare, dental/vision) show "Ask Loomis about this". Commercial is written, but v1 still stops at the business name + description. |
+| Guide mascot | **Roxie**, a small shaggy grey dog with floppy ears (§3.5). |
+| Art | Drawn in **Canva Pro** by an artist in the family, in three rounds, from the art guide PDF in `risk-manager/art/`. |
+| Reply promise | *"Response times may vary — we'll get to you ASAP."* |
+| Staff names | Later; "Your Loomis agent" for now. |
+| Starting before sign-up | Yes, and clients can **save without a login**, which works like a submitted form (§12.1). |
+
+Still open:
+
+1. **Earthquake and event coverage.** Marked "we write this" because they're
+   P&C lines the license covers; confirm Loomis can actually place them.
+2. **Brand colors.** If Loomis has official colors, they replace Loomis Blue
+   and Gold for HQ and Roxie's collar.
+3. **Counsel and E&O review** — TECHNICAL_DESIGN.md §5.4 has the checklist,
+   now specific to New York and Pennsylvania.

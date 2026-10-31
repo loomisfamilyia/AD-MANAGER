@@ -130,6 +130,11 @@ const hB = await as(db, "B", async () => {
   await expectError(db.query("select prm_mark_thread_read($1)", [hA]), "B cannot mark A's thread read", /not a member/);
   // Spoofing created_by on insert
   await expectError(db.query("insert into households (display_name, created_by) values ('spoof', $1)", [U.A]), "B cannot create a household as A", /row-level security|unique/);
+  // Quote requests name at least one line, and the source is the database's call
+  await expectError(db.query("insert into quote_requests (household_id, lines) values ($1, '{}')", [h]), "a quote request needs a line", /check constraint/);
+  const src = (await db.query("insert into quote_requests (household_id, lines, source) values ($1, '{auto}', 'saved_world') returning source", [h])).rows[0].source;
+  ok(src === "quote_request", "client cannot pick the request source (" + src + ")");
+  await expectError(db.query("select prm_save_world_without_login('B', '5551234567')"), "logged-in client cannot use the no-login save", /logged-in clients/);
   return h;
 });
 
@@ -168,12 +173,34 @@ await as(db, "C", async () => {
   ok(true, "anonymous user can build a world");
   await expectError(db.query("insert into household_messages (household_id, body) values ($1, 'spam')", [h]), "anonymous user cannot message staff", /row-level security/);
   await expectError(db.query("insert into quote_requests (household_id, lines) values ($1, '{pet}')", [h]), "anonymous user cannot request quotes", /row-level security/);
+
+  // Saving without a login: the one door from an anonymous session to staff
+  await expectError(db.query("select prm_save_world_without_login('Casey', null, null)"), "no-login save needs a phone or email", /phone number or email/);
+  await expectError(db.query("select prm_save_world_without_login('   ', '5551234567')"), "no-login save needs a name", /a name is needed/);
+  await expectError(db.query("select prm_save_world_without_login('Casey', null, 'not-an-email')"), "no-login save rejects a bad email", /check constraint/);
+  await expectError(db.query("select prm_save_world_without_login('Casey', '123')"), "no-login save rejects a too-short phone", /check constraint/);
+  const leftover = (await db.query("select count(*)::int n from household_contacts where household_id = $1", [h])).rows[0].n;
+  ok(leftover === 0, "a failed save leaves nothing behind (" + leftover + ")");
+  await db.query("insert into coverage_choices (household_id, coverage_id, line, stance) values ($1, 'pet_accident_illness', 'pet', 'want'), ($1, 'umbrella_personal', 'umbrella', 'not_now')", [h]);
+  const qid = (await db.query("select prm_save_world_without_login('Casey Doe', '(555) 123-4567', null, 'call', 'Evenings are best') as id")).rows[0].id;
+  const q = (await db.query("select source, lines, status, note, snapshot from quote_requests where id = $1", [qid])).rows[0];
+  ok(q.source === "saved_world", "no-login save files a saved_world request");
+  ok(q.lines.join() === "pet", "saved world carries the plan's lines, minus 'not now' (" + q.lines.join() + ")");
+  ok(q.status === "new" && q.note === "Evenings are best", "saved world lands in the inbox as new with its note");
+  ok(q.snapshot.contact?.full_name === "Casey Doe" && q.snapshot.contact?.phone === "(555) 123-4567", "snapshot carries how to reach them");
+  ok(q.snapshot.assets.length === 1, "snapshot carries the world");
+  const sys = (await db.query("select body from household_messages where household_id = $1 and sender_role = 'system'", [h])).rows;
+  ok(sys.length === 1 && /without a login/.test(sys[0].body), "staff thread notes the no-login save");
+  await expectError(db.query("select prm_save_world_without_login('Casey Doe', '5551234567')"), "a world is saved without a login only once", /already been saved/);
+  // Still can't use the normal doors afterwards
+  await expectError(db.query("insert into household_messages (household_id, body) values ($1, 'hello?')", [h]), "anonymous user still cannot message after saving", /row-level security/);
 }, { anonymous: true });
 
 // --- Logged-out visitor ---------------------------------------------------
 await as(db, "anon", async () => {
   await expectError(db.query("select * from households"), "logged-out visitor has no table access", /permission denied/);
   await expectError(db.query("select * from assets"), "logged-out visitor has no asset access", /permission denied/);
+  await expectError(db.query("select prm_save_world_without_login('x', '5551234567')"), "logged-out visitor cannot call the no-login save", /permission denied/);
 });
 
 // --- Staff without and with MFA -------------------------------------------
@@ -184,6 +211,10 @@ await as(db, "S", async () => {
 await as(db, "S", async () => {
   const n = (await db.query("select count(*)::int n from households")).rows[0].n;
   ok(n === 3, "staff with MFA sees every household (" + n + ")");
+  const c = (await db.query("select count(*)::int n from household_contacts where full_name = 'Casey Doe'")).rows[0].n;
+  ok(c === 1, "staff can see how to reach a no-login saver");
+  const inbox = (await db.query("select count(*)::int n from quote_requests where source = 'saved_world' and status = 'new'")).rows[0].n;
+  ok(inbox === 1, "the saved world is in the staff inbox");
   const p = (await db.query("insert into insurance_policies (household_id, line, carrier) values ($1, 'auto', 'Real Mutual') returning id", [hA])).rows[0].id;
   await db.query("insert into insurance_policy_links (household_id, policy_id, asset_id) values ($1, $2, $3)", [hA, p, carA]);
   await expectError(db.query("insert into insurance_policy_links (household_id, policy_id, asset_id) values ($1, $2, $3)", [hB, p, carA]), "policy links can't cross households", /foreign key/);
@@ -202,6 +233,8 @@ await db.exec(`update staff_members set is_active = true where user_id = '${U.S}
 await as(db, "A", async () => {
   const pol = (await db.query("select carrier from insurance_policies where household_id = $1", [hA])).rows;
   ok(pol.length === 1 && pol[0].carrier === "Real Mutual", "client can read their verified policy");
+  const theirs = (await db.query("select count(*)::int n from household_contacts where full_name = 'Casey Doe'")).rows[0].n;
+  ok(theirs === 0, "a client cannot see another household's contact details");
   const s = (await db.query("select status from quote_requests where household_id = $1", [hA])).rows[0].status;
   ok(s === "in_review", "client sees staff's status update");
 });

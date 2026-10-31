@@ -43,7 +43,7 @@ export type LineId =
   | "supplemental_health" // accident, critical illness, hospital indemnity
   | "dental_vision"
   | "travel"
-  | "identity_theft"
+  | "cyber" // personal cyber: identity restoration, online fraud, extortion
   | "event"
   | "commercial"; // v1 hard stop: we record the business, we don't quote it
 
@@ -209,9 +209,15 @@ export interface Coverage {
   /**
    * Thing kind ids this coverage can attach to. Two ids are special:
    *   "person"    — any person in the household (life, disability, health)
-   *   "household" — the family as a whole (umbrella, identity theft, travel)
+   *   "household" — the family as a whole (umbrella, personal cyber, travel)
    */
   protects: string[];
+  /**
+   * Only offered when the client's home state is one of these. Omit for
+   * coverages offered everywhere. Two-letter USPS codes, and every one must be
+   * a state the agency is licensed in (see agency.ts); the validator checks.
+   */
+  states?: string[];
   /** Limit choices, when picking one makes sense for a quote. */
   limitOptions?: CoverageOption[];
   /** Deductible choices, when relevant. */

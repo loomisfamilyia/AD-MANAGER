@@ -3,16 +3,26 @@ import type { Line } from "./types.ts";
 /**
  * Lines of business, in the order they appear on the budget screen.
  *
- * STAFF REVIEW NEEDED: `agencyWrites` is our best guess. Lines marked `true`
- * are the mainstream personal lines. Lines marked `false` are ones we don't
- * know Loomis writes today; those still show up in the client's plan, but the
- * quote button reads "Ask Loomis about this" so nobody is promised a product we
- * don't sell. Flip a line to `true` here and re-run
+ * `agencyWrites` was confirmed by the agency on 2026-10-31: Loomis is licensed
+ * in NY and PA for life and for property and casualty, personal and commercial,
+ * and also offers trip, flood, pet and cyber insurance. Lines marked `true` get
+ * a real quote request. Lines marked `false` still show up in the client's plan
+ * (the need is real), but the quote button reads "Ask Loomis about this" so
+ * nobody is promised a product we don't sell. Flip a line and re-run
  * `cd risk-manager && npm run catalog:check`
  * to refresh docs/COVERAGE_TREE.md.
  *
- * `commercial` stays `false` on purpose: business insurance is a v1 hard stop.
- * We record the business and Loomis follows up by phone.
+ * The `false` lines are the accident & health lines the agency did not name:
+ * disability, long-term care, health, Medicare, extra health plans, and dental
+ * & vision.
+ *
+ * STAFF TO CONFIRM: `earthquake` and `event` are property and casualty lines
+ * the agency can presumably place, but they were not named in the list above.
+ * They are `true` on that assumption. Please check these two.
+ *
+ * `commercial` is `true` because Loomis writes business insurance, but v1 still
+ * stops at the business name and a short description (the `business` kind's
+ * only coverage is `commercial_review`). Loomis follows up by phone.
  */
 export const LINES: Line[] = [
   {
@@ -62,7 +72,7 @@ export const LINES: Line[] = [
     label: "Earthquake",
     plainEnglish: "Helps with the cost of fixing your home and replacing your things after an earthquake.",
     emoji: "🌎",
-    agencyWrites: false,
+    agencyWrites: true,
   },
   {
     id: "umbrella",
@@ -118,7 +128,7 @@ export const LINES: Line[] = [
     label: "Pet health",
     plainEnglish: "Helps with vet bills when your pet is hurt or sick.",
     emoji: "🐾",
-    agencyWrites: false,
+    agencyWrites: true,
   },
   {
     id: "life",
@@ -174,27 +184,27 @@ export const LINES: Line[] = [
     label: "Travel",
     plainEnglish: "Helps with trip costs and doctor bills when plans change or you are far from home.",
     emoji: "✈️",
-    agencyWrites: false,
+    agencyWrites: true,
   },
   {
-    id: "identity_theft",
-    label: "Identity & cyber",
-    plainEnglish: "Helps you sort things out if someone steals your identity or hacks your accounts.",
+    id: "cyber",
+    label: "Personal cyber",
+    plainEnglish: "Helps with the cost of sorting things out after online scams, hacked devices or identity theft.",
     emoji: "🔐",
-    agencyWrites: false,
+    agencyWrites: true,
   },
   {
     id: "event",
     label: "Weddings & events",
     plainEnglish: "Helps with a wedding or party if plans change or a guest is hurt.",
     emoji: "🎉",
-    agencyWrites: false,
+    agencyWrites: true,
   },
   {
     id: "commercial",
     label: "Business",
     plainEnglish: "Business insurance is a little different. Loomis will talk with you about what fits.",
     emoji: "🏪",
-    agencyWrites: false,
+    agencyWrites: true,
   },
 ];

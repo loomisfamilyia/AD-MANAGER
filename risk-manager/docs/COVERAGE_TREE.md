@@ -2,16 +2,19 @@
 
 _This file is generated. Do not edit it by hand._
 
+**Licensed states:** NY, PA
+
 ## How to review this
 
 This is everything a client can add in the Personal Risk Manager and every coverage that can protect it. Please read it with an agent's eye and check three things:
 
-1. **Which lines we write.** Each line below has a checkbox. `- [x] We write this` means the app will offer a real quote request. `- [ ] We write this` means the app will say "Ask Loomis about this" instead. Our first guess is in the file, so please correct it.
-2. **Is each coverage accurate and fair?** Check the plain-English text. It is written for a 6th-grade reading level, never promises coverage, and says "Rules vary by state" where the rules differ. Suggest better words if something is off.
+1. **Which lines we write.** Each line below has a checkbox. `- [x] We write this` means the app will offer a real quote request. `- [ ] We write this` means the app will say "Ask Loomis about this" instead. The agency confirmed these on 2026-10-31, except Earthquake and Weddings & events, which are property and casualty lines we assumed Loomis can place. Please confirm those two, and correct anything else that is off.
+2. **Is each coverage accurate and fair?** Check the plain-English text. It is written for a 6th-grade reading level, never promises coverage, and says "Rules vary by state" where the rules differ. A coverage marked **States** is only offered to clients who live there (for example, New York and Pennsylvania each have their own auto rules). Suggest better words if something is off.
 3. **Are we asking the right questions?** The last section lists every question a client sees, in order. We deliberately do not ask about health, tobacco, Social Security numbers, license numbers or bank details. Agents collect those while quoting.
 
 To make a change, edit the source files and run the script again:
 
+- Licensed states: `risk-manager/src/catalog/agency.ts`
 - Lines and the "We write this" setting: `risk-manager/src/catalog/lines.ts`
 - Coverages and their wording: `risk-manager/src/catalog/coverages.ts`
 - Things clients can add and their questions: `risk-manager/src/catalog/kinds.ts`
@@ -20,7 +23,7 @@ To make a change, edit the source files and run the script again:
 
 The script checks the catalog for mistakes first and stops with a list if it finds any.
 
-**At a glance:** 26 lines, 142 coverages, 52 kinds of things, 20 life events. We write 14 of the 26 lines today.
+**At a glance:** 26 lines, 152 coverages, 52 kinds of things, 20 life events. We write 20 of the 26 lines today.
 
 **Tiers:** Essential means commonly required by law or a lender, or protects against a loss most families could not absorb. Recommended means most households in this situation carry it. Extra means nice to have.
 
@@ -38,17 +41,17 @@ _Helps with the cost of crashes, repairs and injuries when you drive your car or
 
 - **Id:** `auto_liability_bi`
 - **Tier:** Essential
-- **What the client reads:** Can help pay other people's medical bills if you cause a crash. The two numbers are the most per person, then per crash. Rules vary by state.
+- **What the client reads:** Can help pay other people's medical bills if you cause a crash. The two numbers are the most per person, then per crash. State minimum is the lowest amount your state allows. Rules vary by state.
 - **Protects:** 🚗 Car, truck or SUV
-- **Limit choices:** $25,000 / $50,000; $50,000 / $100,000; $100,000 / $300,000; $250,000 / $500,000; $500,000 / $500,000
+- **Limit choices:** State minimum; $50,000 / $100,000; $100,000 / $300,000; $250,000 / $500,000; $500,000 / $500,000
 
 ### Damage to others' property
 
 - **Id:** `auto_liability_pd`
 - **Tier:** Essential
-- **What the client reads:** Can help pay to fix other people's cars, fences or buildings if you cause a crash.
+- **What the client reads:** Can help pay to fix other people's cars, fences or buildings if you cause a crash. State minimum is the lowest amount your state allows.
 - **Protects:** 🚗 Car, truck or SUV
-- **Limit choices:** $25,000; $50,000; $100,000; $250,000
+- **Limit choices:** State minimum; $50,000; $100,000; $250,000
 
 ### Uninsured driver (UM/UIM)
 
@@ -58,21 +61,75 @@ _Helps with the cost of crashes, repairs and injuries when you drive your car or
 - **Protects:** 🚗 Car, truck or SUV
 - **Limit choices:** $25,000 / $50,000; $50,000 / $100,000; $100,000 / $300,000; $250,000 / $500,000; $500,000 / $500,000
 
-### Medical payments
+### Injury protection (no-fault)
 
-- **Id:** `auto_med_pay`
-- **Tier:** Recommended
-- **What the client reads:** Can help pay medical bills for you and your passengers after a crash, no matter who caused it.
+- **Id:** `auto_pip_ny`
+- **Tier:** Essential
+- **States:** NY only
+- **What the client reads:** Personal Injury Protection, or PIP. Required in New York. Can help pay medical bills and lost wages for you and your passengers, no matter who caused the crash. Basic coverage is $50,000 per person.
 - **Protects:** 🚗 Car, truck or SUV
-- **Limit choices:** $1,000; $2,000; $5,000; $10,000
 
-### Personal injury protection
+### Additional PIP
 
-- **Id:** `auto_pip`
+- **Id:** `auto_apip_ny`
 - **Tier:** Recommended
-- **What the client reads:** Can help pay medical bills and some lost pay for you and your passengers, no matter who caused the crash. Some states require it. Rules vary by state.
+- **States:** NY only
+- **What the client reads:** Can raise your no-fault protection above the basic $50,000, so more of your bills and lost pay can be paid. Ask Loomis which amounts you can pick.
 - **Protects:** 🚗 Car, truck or SUV
-- **Limit choices:** $2,500; $5,000; $10,000; $50,000
+- **Needs first:** Injury protection (no-fault)
+
+### Optional Basic Economic Loss
+
+- **Id:** `auto_obel_ny`
+- **Tier:** Extra
+- **States:** NY only
+- **What the client reads:** Optional Basic Economic Loss, or OBEL. Adds $25,000 of no-fault money that you can direct to the costs that matter most to you, like medical bills or lost pay.
+- **Protects:** 🚗 Car, truck or SUV
+- **Needs first:** Injury protection (no-fault)
+
+### Supplementary UM/UIM (SUM)
+
+- **Id:** `auto_sum_ny`
+- **Tier:** Recommended
+- **States:** NY only
+- **What the client reads:** Supplementary Uninsured/Underinsured Motorists, or SUM. Can raise your protection when the other driver has no insurance, or not enough. It usually goes up to your own liability limits.
+- **Protects:** 🚗 Car, truck or SUV
+
+### First party medical benefits
+
+- **Id:** `auto_first_party_pa`
+- **Tier:** Essential
+- **States:** PA only
+- **What the client reads:** Required in Pennsylvania. Can help pay your medical bills after a crash, no matter who caused it. You must have at least $5,000.
+- **Protects:** 🚗 Car, truck or SUV
+- **Limit choices:** $5,000; $10,000; $25,000; $50,000; $100,000
+
+### Extra first party benefits
+
+- **Id:** `auto_first_party_extra_pa`
+- **Tier:** Extra
+- **States:** PA only
+- **What the client reads:** Can add more first party benefits, like money for lost income, funeral costs and accidental death benefits. Ask Loomis which ones you can pick.
+- **Protects:** 🚗 Car, truck or SUV
+- **Needs first:** First party medical benefits
+
+### Full tort or limited tort
+
+- **Id:** `auto_tort_option_pa`
+- **Tier:** Essential
+- **States:** PA only
+- **What the client reads:** In Pennsylvania you pick one. Full tort keeps your right to sue for pain and suffering after a crash, not just for bills. Limited tort costs less, but it limits that right unless the injury is serious. Ask Loomis to talk it through with you.
+- **Protects:** 🚗 Car, truck or SUV
+- **Limit choices:** Full tort; Limited tort
+
+### Stacked UM/UIM limits
+
+- **Id:** `auto_um_stacking_pa`
+- **Tier:** Recommended
+- **States:** PA only
+- **What the client reads:** Stacking adds up your uninsured and underinsured driver limits for each car you insure. That can mean more protection if the other driver has too little insurance. It costs a bit more.
+- **Protects:** 🚗 Car, truck or SUV
+- **Needs first:** Uninsured driver (UM/UIM)
 
 ### Collision
 
@@ -262,6 +319,14 @@ _Helps with the cost of fixing your house and replacing your things after damage
 - **What the client reads:** Can help pay to fix underground water, sewer, gas or power lines that serve your home.
 - **Protects:** 🏡 House I own, 🏖️ Vacation home, ⛲ Well or septic
 - **Limit choices:** $10,000; $25,000
+
+### Mine subsidence
+
+- **Id:** `home_mine_subsidence_pa`
+- **Tier:** Recommended
+- **States:** PA only
+- **What the client reads:** Can help pay for damage if old underground mines settle or collapse under a home. Regular home policies often leave this out. Pennsylvania runs a low-cost state program for it, and Loomis can tell you if it fits where you live.
+- **Protects:** 🏡 House I own, 🏖️ Vacation home, 🏘️ Mobile home, 🏢 Condo I own, 🔑 Home I rent out
 
 ### Equipment breakdown
 
@@ -481,7 +546,7 @@ _Helps with the cost of fixing your home and replacing your things after flood w
 
 - **Id:** `flood_building`
 - **Tier:** Recommended
-- **What the client reads:** Can help pay to fix your home after flood water. Home policies usually do not include flood, and there is often a 30-day wait before it starts, so it helps to ask early.
+- **What the client reads:** Can help pay to fix your home or building after flood water. Regular home policies usually leave flood out, and there is often a 30-day wait before flood insurance starts, so it helps to ask early.
 - **Protects:** 🏡 House I own, 🏖️ Vacation home, 🏘️ Mobile home, 🏢 Condo I own, 🔑 Home I rent out
 - **Limit choices:** $100,000; $150,000; $250,000
 - **Deductible choices:** $1,000; $2,000; $5,000; $10,000
@@ -490,8 +555,8 @@ _Helps with the cost of fixing your home and replacing your things after flood w
 
 - **Id:** `flood_contents`
 - **Tier:** Recommended
-- **What the client reads:** Can help pay to replace your things after flood water. Renters can add this too.
-- **Protects:** 🏡 House I own, 🏖️ Vacation home, 🏘️ Mobile home, 🏢 Condo I own, 🏠 Place I rent, 🔑 Home I rent out
+- **What the client reads:** Can help pay to replace your things after flood water. If you rent, you can add this on its own. It is for your belongings only, not the building.
+- **Protects:** 🏡 House I own, 🏖️ Vacation home, 🏘️ Mobile home, 🏢 Condo I own, 🏠 Place I rent, 🎓 Student housing, 🔑 Home I rent out
 - **Limit choices:** $25,000; $50,000; $100,000
 - **Deductible choices:** $1,000; $2,000; $5,000
 
@@ -505,7 +570,7 @@ _Helps with the cost of fixing your home and replacing your things after flood w
 
 ## 🌎 Earthquake (`earthquake`)
 
-- [ ] We write this
+- [x] We write this
 
 _Helps with the cost of fixing your home and replacing your things after an earthquake._
 
@@ -966,7 +1031,7 @@ _Helps look after a classic or collector car at a value you agree on up front._
 
 ## 🐾 Pet health (`pet`)
 
-- [ ] We write this
+- [x] We write this
 
 _Helps with vet bills when your pet is hurt or sick._
 
@@ -1194,7 +1259,7 @@ _Helps with dentist visits, eye exams and glasses._
 
 ## ✈️ Travel (`travel`)
 
-- [ ] We write this
+- [x] We write this
 
 _Helps with trip costs and doctor bills when plans change or you are far from home._
 
@@ -1219,11 +1284,11 @@ _Helps with trip costs and doctor bills when plans change or you are far from ho
 - **What the client reads:** Can help pay if your bags are lost, stolen or late, or if your trip is delayed.
 - **Protects:** The whole household
 
-## 🔐 Identity & cyber (`identity_theft`)
+## 🔐 Personal cyber (`cyber`)
 
-- [ ] We write this
+- [x] We write this
 
-_Helps you sort things out if someone steals your identity or hacks your accounts._
+_Helps with the cost of sorting things out after online scams, hacked devices or identity theft._
 
 ### Identity theft help
 
@@ -1233,16 +1298,37 @@ _Helps you sort things out if someone steals your identity or hacks your account
 - **Protects:** The whole household
 - **Limit choices:** $15,000; $25,000; $50,000
 
-### Online & cyber protection
+### Online fraud
 
-- **Id:** `cyber_personal`
+- **Id:** `cyber_online_fraud`
+- **Tier:** Recommended
+- **What the client reads:** Can help pay you back when money is stolen through an online scam or a hacked account.
+- **Protects:** The whole household
+
+### Cyber extortion
+
+- **Id:** `cyber_extortion`
 - **Tier:** Extra
-- **What the client reads:** Can help with problems online, like hacked accounts, online scams and cyberbullying.
+- **What the client reads:** Can help with the costs if someone locks your devices, or threatens to share your files, unless you pay them.
+- **Protects:** The whole household
+
+### Data & device restoration
+
+- **Id:** `cyber_data_restoration`
+- **Tier:** Extra
+- **What the client reads:** Can help pay to fix or restore your computers, phones and files after a virus or a hack.
+- **Protects:** The whole household
+
+### Cyberbullying help
+
+- **Id:** `cyber_bullying`
+- **Tier:** Extra
+- **What the client reads:** Serious online bullying is hard on a family. This can help pay for support, like counseling or a temporary move to a new place. Ask Loomis what is included.
 - **Protects:** The whole household
 
 ## 🎉 Weddings & events (`event`)
 
-- [ ] We write this
+- [x] We write this
 
 _Helps with a wedding or party if plans change or a guest is hurt._
 
@@ -1263,7 +1349,7 @@ _Helps with a wedding or party if plans change or a guest is hurt._
 
 ## 🏪 Business (`commercial`)
 
-- [ ] We write this
+- [x] We write this
 
 _Business insurance is a little different. Loomis will talk with you about what fits._
 
@@ -1317,7 +1403,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `home`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "Your home rises from the ground!"
-- **Coverages offered:** Your house; Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Extended replacement cost; Code upgrade costs; Roof at new-roof cost; Wind & hail deductible; Water backup & sump overflow; Buried utility lines; Equipment breakdown; Airbnb & VRBO hosting; Home business add-on; Flood: your home; Flood: your belongings; Extra flood limit; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
+- **Coverages offered:** Your house; Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Extended replacement cost; Code upgrade costs; Roof at new-roof cost; Wind & hail deductible; Water backup & sump overflow; Buried utility lines; Equipment breakdown; Mine subsidence (PA); Airbnb & VRBO hosting; Home business add-on; Flood: your home; Flood: your belongings; Extra flood limit; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
 
 **Good to know notes:**
 
@@ -1375,7 +1461,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `home`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "Your home rises from the ground!"
-- **Coverages offered:** Inside your unit; Upgrades you made; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Condo group charges; Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
+- **Coverages offered:** Inside your unit; Upgrades you made; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Condo group charges; Mine subsidence (PA); Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
 
 **Good to know notes:**
 
@@ -1423,6 +1509,7 @@ _Where do you live?_
 **Good to know notes:**
 
 - Your landlord's policy is usually for the building, not for your things. A renters policy can help with yours.
+- Renters policies usually leave flood out. You can add flood insurance for just your belongings. Ask Loomis.
 - Renting out your place or a room, even for a weekend, often needs your landlord's okay and a closer look at your policy. Ask Loomis.
 
 **Questions, in order:**
@@ -1448,7 +1535,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `town`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "A road to town appears!"
-- **Coverages offered:** Rental building; Garage, shed & fence; Your stuff in the rental; Lost rent; Landlord liability; Guest medical payments; Short-term rental hosting; Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings
+- **Coverages offered:** Rental building; Garage, shed & fence; Your stuff in the rental; Lost rent; Landlord liability; Guest medical payments; Short-term rental hosting; Mine subsidence (PA); Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings
 
 **Good to know notes:**
 
@@ -1501,7 +1588,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `town`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "A road to town appears!"
-- **Coverages offered:** Your house; Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Extended replacement cost; Code upgrade costs; Roof at new-roof cost; Wind & hail deductible; Water backup & sump overflow; Buried utility lines; Equipment breakdown; Airbnb & VRBO hosting; Flood: your home; Flood: your belongings; Extra flood limit; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
+- **Coverages offered:** Your house; Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Extended replacement cost; Code upgrade costs; Roof at new-roof cost; Wind & hail deductible; Water backup & sump overflow; Buried utility lines; Equipment breakdown; Mine subsidence (PA); Airbnb & VRBO hosting; Flood: your home; Flood: your belongings; Extra flood limit; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
 
 **Good to know notes:**
 
@@ -1550,7 +1637,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `home`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "Your home rises from the ground!"
-- **Coverages offered:** Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Wind & hail deductible; Equipment breakdown; Home business add-on; Mobile home & attachments; Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
+- **Coverages offered:** Garage, shed & fence; Your belongings; Belongings at new cost; Extra living costs; Personal liability; Guest medical payments; Wind & hail deductible; Equipment breakdown; Home business add-on; Mobile home & attachments; Mine subsidence (PA); Flood: your home; Flood: your belongings; Earthquake: your home; Earthquake: belongings; Earthquake: living costs
 
 **Good to know notes:**
 
@@ -1593,7 +1680,7 @@ _Where do you live?_
 - **Shows up in the world:** zone `town`
 - **Points for adding it:** 150 XP
 - **First-time surprise:** "A road to town appears!"
-- **Coverages offered:** Your belongings; Belongings at new cost; Personal liability; Extra living costs; Guest medical payments
+- **Coverages offered:** Your belongings; Belongings at new cost; Personal liability; Extra living costs; Guest medical payments; Flood: your belongings
 
 **Good to know notes:**
 
@@ -1868,7 +1955,7 @@ _What do you drive?_
 - **Shows up in the world:** zone `driveway`
 - **Points for adding it:** 100 XP
 - **First-time surprise:** "A driveway rolls out to the street!"
-- **Coverages offered:** Injury to others; Damage to others' property; Uninsured driver (UM/UIM); Medical payments; Personal injury protection; Collision; Comprehensive; Glass repair; Rental car; Roadside help & towing; Loan or lease gap; New car replacement; Custom parts & equipment; Rideshare & delivery
+- **Coverages offered:** Injury to others; Damage to others' property; Uninsured driver (UM/UIM); Injury protection (no-fault) (NY); Additional PIP (NY); Optional Basic Economic Loss (NY); Supplementary UM/UIM (SUM) (NY); First party medical benefits (PA); Extra first party benefits (PA); Full tort or limited tort (PA); Stacked UM/UIM limits (PA); Collision; Comprehensive; Glass repair; Rental car; Roadside help & towing; Loan or lease gap; New car replacement; Custom parts & equipment; Rideshare & delivery
 
 **Good to know notes:**
 

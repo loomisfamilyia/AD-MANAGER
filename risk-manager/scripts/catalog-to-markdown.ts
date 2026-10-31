@@ -11,6 +11,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  AGENCY,
   CATEGORIES,
   COVERAGES,
   LIFE_EVENTS,
@@ -31,6 +32,12 @@ const TIER_LABEL: Record<Coverage["tier"], string> = {
 
 /** Escape characters that would break a markdown table cell or list item. */
 const esc = (s: string): string => s.replace(/\|/g, "\\|");
+
+/** "NY only", "NY and PA only", "NY, PA and NJ only". */
+function statesLabel(states: string[]): string {
+  const list = states.length <= 2 ? states.join(" and ") : `${states.slice(0, -1).join(", ")} and ${states[states.length - 1]}`;
+  return `${list} only`;
+}
 
 const options = (list: CoverageOption[] | undefined): string => (list ? list.map((o) => o.label).join("; ") : "");
 
@@ -77,16 +84,19 @@ function render(): string {
     "",
     "_This file is generated. Do not edit it by hand._",
     "",
+    `**Licensed states:** ${AGENCY.licensedStates.join(", ")}`,
+    "",
     "## How to review this",
     "",
     "This is everything a client can add in the Personal Risk Manager and every coverage that can protect it. Please read it with an agent's eye and check three things:",
     "",
-    "1. **Which lines we write.** Each line below has a checkbox. `- [x] We write this` means the app will offer a real quote request. `- [ ] We write this` means the app will say \"Ask Loomis about this\" instead. Our first guess is in the file, so please correct it.",
-    "2. **Is each coverage accurate and fair?** Check the plain-English text. It is written for a 6th-grade reading level, never promises coverage, and says \"Rules vary by state\" where the rules differ. Suggest better words if something is off.",
+    "1. **Which lines we write.** Each line below has a checkbox. `- [x] We write this` means the app will offer a real quote request. `- [ ] We write this` means the app will say \"Ask Loomis about this\" instead. The agency confirmed these on 2026-10-31, except Earthquake and Weddings & events, which are property and casualty lines we assumed Loomis can place. Please confirm those two, and correct anything else that is off.",
+    "2. **Is each coverage accurate and fair?** Check the plain-English text. It is written for a 6th-grade reading level, never promises coverage, and says \"Rules vary by state\" where the rules differ. A coverage marked **States** is only offered to clients who live there (for example, New York and Pennsylvania each have their own auto rules). Suggest better words if something is off.",
     "3. **Are we asking the right questions?** The last section lists every question a client sees, in order. We deliberately do not ask about health, tobacco, Social Security numbers, license numbers or bank details. Agents collect those while quoting.",
     "",
     "To make a change, edit the source files and run the script again:",
     "",
+    "- Licensed states: `risk-manager/src/catalog/agency.ts`",
     "- Lines and the \"We write this\" setting: `risk-manager/src/catalog/lines.ts`",
     "- Coverages and their wording: `risk-manager/src/catalog/coverages.ts`",
     "- Things clients can add and their questions: `risk-manager/src/catalog/kinds.ts`",
@@ -115,6 +125,7 @@ function render(): string {
       push(`### ${coverage.label}`, "");
       push(`- **Id:** \`${coverage.id}\``);
       push(`- **Tier:** ${TIER_LABEL[coverage.tier]}`);
+      if (coverage.states?.length) push(`- **States:** ${statesLabel(coverage.states)}`);
       push(`- **What the client reads:** ${coverage.plainEnglish}`);
       push(`- **Protects:** ${protectsLabel(coverage)}`);
       if (coverage.limitOptions) push(`- **Limit choices:** ${options(coverage.limitOptions)}`);
@@ -141,7 +152,11 @@ function render(): string {
       push(`- **Points for adding it:** ${kind.xp} XP`);
       if (kind.firstTimeReveal) push(`- **First-time surprise:** "${kind.firstTimeReveal}"`);
       if (kind.coverages.length) {
-        const labels = kind.coverages.map((id) => COVERAGES.find((c) => c.id === id)?.label ?? id);
+        const labels = kind.coverages.map((id) => {
+          const coverage = COVERAGES.find((c) => c.id === id);
+          if (!coverage) return id;
+          return coverage.states?.length ? `${coverage.label} (${coverage.states.join(", ")})` : coverage.label;
+        });
         push(`- **Coverages offered:** ${labels.join("; ")}`);
       } else {
         push("- **Coverages offered:** none");

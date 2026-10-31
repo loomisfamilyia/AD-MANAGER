@@ -33,6 +33,18 @@ Rules of the road:
 
 Sizes: **S** ≈ one focused session · **M** ≈ two or three · **L** ≈ split it.
 
+## Art pipeline (runs alongside M1–M5)
+
+The artist works from the PDF in `risk-manager/art/`, in three rounds. Each
+batch that comes back gets one ticket:
+
+| # | Ticket | Who | Size | Done when |
+|---|---|---|---|---|
+| ART-n | Check a returned batch against `art/assets.ts`: names, sizes, transparent background, angle, outline and palette from the style guide. Note anything to redo for the artist. Move approved files to `art/final/`, optimize them (WebP, sized for 1× and 2× screens), and swap the placeholders in the app | Sonnet | S | Every file in the batch is either in `art/final/` and on screen, or on a short, friendly redo list |
+
+Round 1 (Roxie, HQ, people, homes, everyday cars, world basics) is what the
+beta needs. Rounds 2 and 3 can land any time after.
+
 ---
 
 ## M0 · Planning — *this branch* ✅
@@ -41,7 +53,10 @@ Sizes: **S** ≈ one focused session · **M** ≈ two or three · **L** ≈ spli
 - [x] Catalog: lines, categories, thing kinds, coverages, life events, validator
 - [x] Supabase schema with RLS and the PGlite attack suite
 - [x] Playable prototype (`risk-manager/prototype/index.html`)
-- [ ] **Loomis decisions** — GAME_DESIGN.md §14 (states, lines written, mascot, art, reply promise, staff, anonymous start)
+- [x] **Loomis decisions** — GAME_DESIGN.md §14: NY + PA, lines written, Roxie, Canva art, "response times may vary", save without a login
+- [x] Catalog tailored to NY/PA (no-fault, tort option, stacking, mine subsidence) and personal cyber
+- [x] Save-without-login in the schema (`prm_save_world_without_login`) with tests
+- [x] Art guide PDF for the artist (`risk-manager/art/`)
 
 ## M1 · "Open Field" — the world exists and remembers you
 
@@ -52,7 +67,7 @@ basic questions, and come back tomorrow to find them there.
 |---|---|---|---|---|
 | M1-1 | Install the schema on the site's Supabase project (TECHNICAL_DESIGN.md §9), including the over-broad-policy audit. Generate TS types. | Lead | S | Audit query clean; `test:rls` green; types committed |
 | M1-2 | Copy the catalog into the site; add `catalog:check` to CI | Haiku | S | Validator passes in CI |
-| M1-3 | Auth: anonymous start with Turnstile, "Save my world" with a 6-digit email code, sign back in with a code | Sonnet | M | Works on iPhone Safari *and* as a home-screen app; no magic links |
+| M1-3 | Auth: anonymous start with Turnstile; the Save sheet with both paths — login by 6-digit email code, or "just send it to Loomis" via `prm_save_world_without_login` then sign out; sign back in with a code | Sonnet | M | Works on iPhone Safari *and* as a home-screen app; no magic links; the no-login path leaves nothing readable on the device |
 | M1-4 | `juice/` module: sound sprite player (unlock on first tap, mute, respects iPhone silent switch), haptics, `useMotion()` with reduced-motion, text-size setting | Sonnet | S | Settings persist; reduced motion replaces every animation with a fade |
 | M1-5 | World renderer: ground growth, zones, auto-fit camera, Loomis HQ on its hill, things as buttons with idle bob | Sonnet | M | 30 things render smoothly on a budget Android; every thing has a full aria-label |
 | M1-6 | Add flow engine driven by the catalog: category grid → kinds → one question per screen, all question types except photo/VIN/address; autosave per answer; "Skip" and "I don't know" | Sonnet | L → split by question type | Adding any catalog kind works without kind-specific code |

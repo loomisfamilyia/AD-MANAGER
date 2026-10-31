@@ -3,6 +3,7 @@
  * Everything here is plain data and pure functions so it runs the same in the
  * app, in tests and in the staff-review script.
  */
+import { AGENCY, isLicensedState } from "./agency.ts";
 import { CATEGORIES } from "./categories.ts";
 import { COVERAGES } from "./coverages.ts";
 import { THING_KINDS } from "./kinds.ts";
@@ -10,7 +11,8 @@ import { LIFE_EVENTS } from "./lifeEvents.ts";
 import { LINES } from "./lines.ts";
 import type { Category, CategoryId, Coverage, Line, LineId, Question, ThingKind } from "./types.ts";
 
-export { CATEGORIES, COVERAGES, LIFE_EVENTS, LINES, THING_KINDS };
+export { AGENCY, CATEGORIES, COVERAGES, LIFE_EVENTS, LINES, THING_KINDS, isLicensedState };
+export type { LicensedState } from "./agency.ts";
 export type {
   Category,
   CategoryId,
@@ -54,14 +56,22 @@ export function lineById(id: string): Line | undefined {
  * `kind.coverages` only decides display order (anything it forgot to list goes
  * last). Works for the two virtual targets too: "person" is a real kind, and
  * "household" has no kind at all, so it is answered straight from `protects`.
+ *
+ * Pass the client's home state to hide coverages that are only offered in other
+ * states (`coverage.states`). With no state, nothing is hidden: the caller
+ * hasn't learned the client's state yet, so staff tools and the review document
+ * see everything.
  */
-export function coveragesFor(kindId: string): Coverage[] {
+export function coveragesFor(kindId: string, options: { state?: string } = {}): Coverage[] {
+  const state = options.state?.trim().toUpperCase();
   const order = kindIndex.get(kindId)?.coverages ?? [];
   const rank = (id: string): number => {
     const i = order.indexOf(id);
     return i === -1 ? Number.MAX_SAFE_INTEGER : i;
   };
-  return COVERAGES.filter((c) => c.protects.includes(kindId)).sort((a, b) => rank(a.id) - rank(b.id));
+  return COVERAGES.filter(
+    (c) => c.protects.includes(kindId) && (!state || !c.states || c.states.includes(state)),
+  ).sort((a, b) => rank(a.id) - rank(b.id));
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +106,7 @@ const LINE_IDS: Record<LineId, true> = {
   supplemental_health: true,
   dental_vision: true,
   travel: true,
-  identity_theft: true,
+  cyber: true,
   event: true,
   commercial: true,
 };
@@ -113,6 +123,18 @@ const CATEGORY_IDS: Record<CategoryId, true> = {
 
 /** Coverage targets that are not a kind in THING_KINDS. */
 const VIRTUAL_TARGETS = new Set(["household"]);
+
+/**
+ * Valid two-letter USPS codes: the 50 states, DC and the territories. A typo
+ * like "N.Y." or "PN" should fail loudly instead of hiding a coverage forever.
+ */
+const USPS_CODES = new Set(
+  (
+    "AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT " +
+    "NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY " +
+    "AS GU MP PR VI"
+  ).split(" "),
+);
 
 /** Labels become big phone buttons. */
 const MAX_LABEL_LENGTH = 28;
@@ -184,6 +206,14 @@ export function validateCatalog(): string[] {
     for (const id of duplicates(ids)) add(`${what}: duplicate id "${id}"`);
     for (const id of ids) if (!SNAKE_CASE.test(id)) add(`${what}: id "${id}" is not lowercase snake_case`);
   };
+
+  // --- Agency ----------------------------------------------------------------
+  const licensedStates: readonly string[] = AGENCY.licensedStates;
+  if (licensedStates.length === 0) add(`agency: licensedStates is empty`);
+  for (const state of duplicates([...licensedStates])) add(`agency: licensed state "${state}" is listed twice`);
+  for (const state of licensedStates) {
+    if (!USPS_CODES.has(state)) add(`agency: licensed state "${state}" is not a valid two-letter USPS code`);
+  }
 
   // --- Lines and categories --------------------------------------------------
   checkIds("line", LINES.map((l) => l.id));
@@ -310,11 +340,27 @@ export function validateCatalog(): string[] {
       for (const value of duplicates(list.map((o) => o.value))) add(`${where}: duplicate ${name} value "${value}"`);
     }
 
+    if (coverage.states) {
+      if (coverage.states.length === 0) add(`${where}: states is empty (omit it to offer the coverage everywhere)`);
+      for (const state of duplicates(coverage.states)) add(`${where}: states lists "${state}" twice`);
+      for (const state of coverage.states) {
+        if (!USPS_CODES.has(state)) {
+          add(`${where}: state "${state}" is not a valid two-letter USPS code (use capitals, like "NY")`);
+        } else if (!isLicensedState(state)) {
+          add(`${where}: state "${state}" is not in AGENCY.licensedStates (${AGENCY.licensedStates.join(", ")})`);
+        }
+      }
+    }
+
     for (const required of coverage.requires ?? []) {
       const base = coverageIndex.get(required);
       if (required === coverage.id) add(`${where}: requires itself`);
       else if (!base) add(`${where}: requires unknown coverage "${required}"`);
       else {
+        // A state-specific add-on can't outlive its base: the base must be offered wherever this is.
+        if (base.states && !coverage.states?.every((s) => base.states!.includes(s))) {
+          add(`${where}: requires "${required}", which is not offered in every state this coverage is`);
+        }
         // A client can only pick the base on a thing that offers it.
         for (const target of coverage.protects) {
           if (!base.protects.includes(target)) {

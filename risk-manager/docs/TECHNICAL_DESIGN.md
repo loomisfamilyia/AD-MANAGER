@@ -122,7 +122,8 @@ than it sounds: older users press Back to get out of anything.
                                           │     └── household_files ──▶ storage: household-files/{household_id}/…
                                           ├── coverage_choices (need / want / not now per coverage per thing)
                                           ├── budget_lines (desired $/month per line)
-                                          ├── quote_requests (server-built snapshot)
+                                          ├── household_contacts (name, phone, email, how to reach them)
+                                          ├── quote_requests (server-built snapshot; source = quote_request | saved_world)
                                           ├── insurance_policies ◀── insurance_policy_links (staff only)
                                           ├── household_messages (one thread; realtime)
                                           ├── household_achievements
@@ -189,6 +190,7 @@ with tests."
 | **This database already has a "staff can see everything" policy** like the Ads Manager's `to authenticated using (true)` | Run the audit query at the top of schema.sql before installing. Any such policy exposes that table to every client | §9 |
 | A staff password is phished | Staff access requires MFA (`aal2`) in `prm_is_staff()`; staff are a table, so removal is immediate | schema.sql |
 | Anonymous sign-ins mint `authenticated` sessions | Anonymous users can only touch their own world; messages and quote requests require a permanent account; CAPTCHA on sign-in; stale anonymous users are purged | schema.sql + Auth settings |
+| Anonymous spam reaching staff | The **only** path from an anonymous session to staff is `prm_save_world_without_login`: anonymous callers only, their own world only, once per world, and only with a name plus a phone or email | schema.sql, tested |
 | A client posts as "staff" or "system" | A trigger overwrites `sender_role` on every insert | schema.sql, tested |
 | A client marks their own boat "covered" | `insurance_policies` is staff-write-only | schema.sql, tested |
 | A client forges public-records data or a quote snapshot | `property_records` is written only by the edge function; `quote_requests.snapshot` is built by a trigger | schema.sql, tested |
@@ -226,14 +228,43 @@ territory.
 
 ### 5.4 Regulatory checklist (confirm with counsel and the E&O carrier)
 
-Research notes are in [DATA_SOURCES.md §10](DATA_SOURCES.md). Before launch:
+Research notes are in [DATA_SOURCES.md §10](DATA_SOURCES.md). Loomis is
+licensed in **New York and Pennsylvania**, and both states have their own
+insurance data-security rules:
 
-- [ ] Written information security program — the NAIC Insurance Data Security
-      Model Law (#668) has been adopted in many states; check the agency's
-      states and the small-licensee exemptions.
-- [ ] Incident response plan with the state's notification deadline (commonly 72 hours).
+- **New York — DFS Cybersecurity Regulation (23 NYCRR 500).** It applies to
+  entities licensed by DFS, agencies included. Small licensees can claim a
+  *limited* exemption under §500.19(a); it must be filed as a Notice of
+  Exemption within 30 days. Limited-exempt entities still owe part of the
+  regulation, and every covered entity without a *full* exemption files an
+  annual certification of compliance (or acknowledgment of noncompliance)
+  with DFS between January 1 and April 15.
+  ([DFS submissions](https://www.dfs.ny.gov/cybersecurity/submissions-notifications) ·
+  [DFS exemptions](https://www.dfs.ny.gov/cybersecurity/exemptions))
+- **Pennsylvania — Insurance Data Security Act (Act 2 of 2023).** In effect
+  since December 2023. It requires licensees to safeguard consumers'
+  nonpublic information and to notify the Insurance Commissioner of a
+  cybersecurity event within five business days, with an exception for
+  certain small businesses.
+  ([PA Insurance Department](https://www.pa.gov/agencies/insurance/laws-regulations-notices/act-2-2023-insurance-data-security.html))
+
+Exactly which sections apply to an agency Loomis's size, the current
+small-business thresholds, and whether client portal logins count toward
+New York's MFA requirement are questions for counsel; the sources above
+don't settle them. The design already requires MFA for staff, keeps an
+audit trail, and minimizes what's collected. Before launch:
+
+- [ ] Written information security program and risk assessment covering this
+      app (NY Part 500 and PA Act 2; confirm exemptions and file any NY
+      Notice of Exemption).
+- [ ] Incident response plan with **both** states' deadlines: DFS (72 hours
+      under Part 500 ⚠️ verify for limited-exempt filers) and the PA Insurance
+      Commissioner (five business days).
+- [ ] Calendar the NY DFS annual filing (January 1 – April 15).
 - [ ] Vendor agreements / DPAs: Supabase, Lovable, RentCast, Google, email provider.
-- [ ] GLBA privacy notice delivered at sign-up.
+- [ ] GLBA privacy notice delivered at sign-up **and** on the save-without-login
+      form (those clients are consumers too). New York and Pennsylvania each
+      have their own insurance privacy regulations; confirm the notice meets both.
 - [ ] License number and any required disclosures on the site.
 - [ ] E&O review of the shield wording, "Need/Want" framing and gap hints.
 - [ ] Confirm the reward design (no cash value) against state anti-rebating rules.
@@ -259,10 +290,21 @@ cd risk-manager && npm install && npm run test:rls
 
 1. **First visit:** `supabase.auth.signInAnonymously()` (with CAPTCHA). The
    world starts immediately — no form before the fun.
-2. **"Save my world"** (prompted after the first few things, and required
-   before messaging Loomis): the client types an email, receives a **6-digit
-   code**, and types it in. Under the hood, `updateUser({ email })` links the
-   email to the same anonymous user id, so nothing moves.
+2. **"Save my world"** (prompted once after the third thing, and required
+   before messaging Loomis or requesting a quote) offers two paths
+   (GAME_DESIGN.md §12.1):
+   - **Make a free login:** the client types an email, receives a **6-digit
+     code**, and types it in. Under the hood, `updateUser({ email })` links the
+     email to the same anonymous user id, so nothing moves.
+   - **No thanks — just send it to Loomis:** the client gives a name, a phone
+     and/or email, and how they'd like to be reached. The app calls
+     `prm_save_world_without_login(...)`, which stores the contact in
+     `household_contacts` and files a `saved_world` request (with the same
+     server-built snapshot as a quote request) into the staff inbox. Then the
+     app calls `supabase.auth.signOut()` and clears local state, so the world
+     can't be reopened from that device. To come back, the client talks to
+     Loomis. Staff attach the household to a new login by inserting a
+     `household_users` row once the client has signed up.
 3. **Coming back:** email → 6-digit code → in. No passwords to forget.
 
 **Why a typed code instead of a magic link:** on phones, a magic link opens in
@@ -310,7 +352,7 @@ the caller's JWT and household membership before doing anything.
 | `notify-staff` | Database webhook on new client message / quote request | Emails the agency inbox: "New message from the Smith household" (no personal details in the email body) |
 | `notify-client` | Database webhook on new staff message | Emails the client: "You have a new message from Loomis" with a link — never the message itself |
 | `forward-lead` | Database webhook on new quote request | Posts a lead to the **Ads Manager** with the household's `first_touch` UTMs and line, so ad spend gets credited (§7.6) |
-| `nightly-cleanup` | Scheduled (pg_cron) | Purges anonymous users idle > 30 days, soft-deleted rows > 30 days, and orphaned storage objects |
+| `nightly-cleanup` | Scheduled (pg_cron) | Purges anonymous users idle > 30 days, and their worlds **unless the world was saved with Loomis** (a `saved_world` request exists); also soft-deleted rows > 30 days and orphaned storage objects |
 
 ### 7.1 Property data
 

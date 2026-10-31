@@ -20,7 +20,9 @@
 -- Access model, enforced by Row Level Security on every table:
 --   * a client sees and edits only households they belong to
 --   * staff (rows in staff_members, signed in with MFA) see everything
---   * anonymous visitors see nothing
+--   * logged-out visitors see nothing
+--   * anonymous sign-ins (playing before making a login) can build their own
+--     world, and reach staff only through prm_save_world_without_login
 --   * a few columns and tables are staff-write-only: in-force policies,
 --     agency notes, quote status. The client app can never mark something
 --     "covered" — only Loomis can.
@@ -45,7 +47,7 @@ begin
     'people', 'person_links', 'assets', 'household_files', 'property_records',
     'coverage_choices', 'budget_lines', 'quote_requests', 'insurance_policies',
     'insurance_policy_links', 'household_messages', 'household_achievements',
-    'household_activity'
+    'household_activity', 'household_contacts'
   ]
   loop
     if to_regclass('public.' || t) is not null then
@@ -390,6 +392,19 @@ create table if not exists budget_lines (
 );
 comment on table budget_lines is 'prm: desired monthly spend per line';
 
+-- How Loomis reaches the household. A logged-in client's email is already on
+-- their login; this holds everything else, and for a world saved without a
+-- login it is the only way back to the person who built it.
+create table if not exists household_contacts (
+  household_id      uuid primary key references households(id) on delete cascade,
+  full_name         text check (length(full_name) between 1 and 120),
+  email             text check (length(email) <= 254 and email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  phone             text check (length(regexp_replace(phone, '\D', '', 'g')) between 10 and 15),
+  preferred_contact text check (preferred_contact in ('call', 'text', 'email')),
+  updated_at        timestamptz not null default now()
+);
+comment on table household_contacts is 'prm: how Loomis reaches the household';
+
 -- ---------------------------------------------------------------------------
 -- Quote requests
 --
@@ -398,12 +413,20 @@ comment on table budget_lines is 'prm: desired monthly spend per line';
 -- household's plan at the moment of the request, so the agent quotes exactly
 -- what the client saw — not whatever they edit afterwards, and not whatever a
 -- modified client chose to send.
+--
+-- A world saved without a login arrives here too, as source 'saved_world'
+-- (see prm_save_world_without_login), so staff work one inbox, not two.
 -- ---------------------------------------------------------------------------
 create table if not exists quote_requests (
   id           uuid primary key default gen_random_uuid(),
   household_id uuid not null references households(id) on delete cascade,
   requested_by uuid references auth.users(id) on delete set null,
-  lines        text[] not null check (cardinality(lines) between 1 and 30),
+  -- Set by the database from who is asking, never by the client.
+  source       text not null default 'quote_request'
+               check (source in ('quote_request', 'saved_world')),
+  -- A saved world may have no plan yet ("just call me"); a quote request
+  -- always names at least one line.
+  lines        text[] not null check (cardinality(lines) <= 30),
   note         text check (length(note) <= 2000),
   snapshot     jsonb not null default '{}',
   status       text not null default 'new'
@@ -411,6 +434,7 @@ create table if not exists quote_requests (
   assigned_to  uuid references auth.users(id) on delete set null,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now(),
+  check (source = 'saved_world' or cardinality(lines) >= 1),
   unique (household_id, id)
 );
 comment on table quote_requests is 'prm: plans sent to the agency for quoting';
@@ -549,7 +573,7 @@ declare t text;
 begin
   foreach t in array array[
     'households', 'household_agency', 'people', 'assets', 'coverage_choices',
-    'budget_lines', 'quote_requests', 'insurance_policies'
+    'budget_lines', 'quote_requests', 'insurance_policies', 'household_contacts'
   ]
   loop
     execute format('drop trigger if exists prm_touch_updated on %I', t);
@@ -629,6 +653,12 @@ as $$
 begin
   new.requested_by := auth.uid();
   new.created_at := now();
+  -- Anonymous sessions can't insert here directly (RLS), only through
+  -- prm_save_world_without_login, so "anonymous" means "saved world".
+  new.source := case
+    when coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then 'saved_world'
+    else 'quote_request'
+  end;
   if not public.prm_is_staff() then
     new.status := 'new';
     new.assigned_to := null;
@@ -638,6 +668,9 @@ begin
     'taken_at', now(),
     'monthly_budget',
       (select h.monthly_budget from public.households h where h.id = new.household_id),
+    'contact',
+      (select to_jsonb(hc) - 'household_id'
+         from public.household_contacts hc where hc.household_id = new.household_id),
     'budget_lines',
       (select coalesce(jsonb_object_agg(b.line, b.monthly_amount), '{}'::jsonb)
          from public.budget_lines b where b.household_id = new.household_id),
@@ -677,7 +710,10 @@ begin
   values (
     new.household_id,
     'system',
-    'Quote request sent: ' || array_to_string(new.lines, ', '),
+    case new.source
+      when 'saved_world' then 'World saved without a login. They asked Loomis to reach out.'
+      else 'Quote request sent: ' || array_to_string(new.lines, ', ')
+    end,
     new.id
   );
 
@@ -726,7 +762,8 @@ declare t text;
 begin
   foreach t in array array[
     'people', 'person_links', 'assets', 'household_files', 'coverage_choices',
-    'budget_lines', 'quote_requests', 'insurance_policies', 'insurance_policy_links'
+    'budget_lines', 'quote_requests', 'insurance_policies', 'insurance_policy_links',
+    'household_contacts'
   ]
   loop
     execute format('drop trigger if exists prm_log_activity on %I', t);
@@ -768,6 +805,93 @@ begin
 end;
 $$;
 
+/**
+ * Save a world without making a login.
+ *
+ * The client was offered a login and declined, but still wants Loomis to
+ * have what they built. This is the form-submission path: it records how to
+ * reach them and files a 'saved_world' request that lands in the staff inbox
+ * like any quote request. The app signs the anonymous session out right
+ * after, so the world can't be reopened from that device (a shared family
+ * computer shouldn't keep showing it). The client gets back to it by talking
+ * to Loomis, and staff can attach it to a new login through household_users.
+ *
+ * This is the only door from an anonymous session to a person at the agency,
+ * so it is deliberately narrow: anonymous callers only, their own world only,
+ * once per world, and only with a way to reach them.
+ */
+create or replace function prm_save_world_without_login(
+  p_full_name         text,
+  p_phone             text default null,
+  p_email             text default null,
+  p_preferred_contact text default null,
+  p_note              text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_household uuid;
+  v_lines     text[];
+  v_request   uuid;
+begin
+  if auth.uid() is null or public.prm_is_permanent_user() then
+    raise exception 'only for worlds saved without a login; logged-in clients send a quote request'
+      using errcode = '42501';
+  end if;
+
+  select household_id into v_household
+    from public.household_users
+   where user_id = auth.uid() and role = 'owner';
+  if v_household is null then
+    raise exception 'there is no world to save yet' using errcode = 'P0002';
+  end if;
+
+  if exists (
+    select 1 from public.quote_requests
+     where household_id = v_household and source = 'saved_world'
+  ) then
+    raise exception 'this world has already been saved with Loomis' using errcode = '23505';
+  end if;
+
+  if nullif(btrim(p_full_name), '') is null then
+    raise exception 'a name is needed so Loomis knows who to ask for' using errcode = '23514';
+  end if;
+  if nullif(btrim(p_phone), '') is null and nullif(btrim(p_email), '') is null then
+    raise exception 'a phone number or email is needed so Loomis can reach you' using errcode = '23514';
+  end if;
+
+  insert into public.household_contacts
+    (household_id, full_name, email, phone, preferred_contact)
+  values (
+    v_household,
+    btrim(p_full_name),
+    nullif(btrim(p_email), ''),
+    nullif(btrim(p_phone), ''),
+    p_preferred_contact
+  )
+  on conflict (household_id) do update
+    set full_name         = excluded.full_name,
+        email             = excluded.email,
+        phone             = excluded.phone,
+        preferred_contact = excluded.preferred_contact;
+
+  -- Every line in their plan, so the snapshot carries all of it.
+  select coalesce(array_agg(distinct line order by line), '{}')
+    into v_lines
+    from public.coverage_choices
+   where household_id = v_household and stance <> 'not_now';
+
+  insert into public.quote_requests (household_id, lines, note)
+  values (v_household, v_lines, nullif(btrim(p_note), ''))
+  returning id into v_request;
+
+  return v_request;
+end;
+$$;
+
 -- ===========================================================================
 -- Row Level Security
 -- ===========================================================================
@@ -780,7 +904,7 @@ begin
     'people', 'person_links', 'assets', 'household_files', 'property_records',
     'coverage_choices', 'budget_lines', 'quote_requests', 'insurance_policies',
     'insurance_policy_links', 'household_messages', 'household_achievements',
-    'household_activity'
+    'household_activity', 'household_contacts'
   ]
   loop
     execute format('alter table %I enable row level security', t);
@@ -801,7 +925,7 @@ declare t text;
 begin
   foreach t in array array[
     'people', 'person_links', 'assets', 'household_files', 'coverage_choices',
-    'budget_lines', 'household_achievements'
+    'budget_lines', 'household_achievements', 'household_contacts'
   ]
   loop
     execute format('drop policy if exists member_all on %I', t);
@@ -887,10 +1011,12 @@ revoke execute on function prm_is_staff() from public, anon;
 revoke execute on function prm_is_permanent_user() from public, anon;
 revoke execute on function prm_my_household_ids() from public, anon;
 revoke execute on function prm_mark_thread_read(uuid) from public, anon;
+revoke execute on function prm_save_world_without_login(text, text, text, text, text) from public, anon;
 grant execute on function prm_is_staff() to authenticated;
 grant execute on function prm_is_permanent_user() to authenticated;
 grant execute on function prm_my_household_ids() to authenticated;
 grant execute on function prm_mark_thread_read(uuid) to authenticated;
+grant execute on function prm_save_world_without_login(text, text, text, text, text) to authenticated;
 
 -- ===========================================================================
 -- Storage: private bucket for photos, receipts and appraisals

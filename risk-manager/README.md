@@ -5,7 +5,7 @@ themselves standing in an empty field. Every person, home, car, pet and
 treasure they add makes the world grow around them. Then they protect it,
 building the coverage they need and the coverage they want, set a budget for
 each line, and send it all to Loomis HQ, which is always right there on their
-map.
+map, with Roxie, the Loomis family's shaggy grey dog, as their guide.
 
 This folder is the **planning stage**: the design, the data model, the
 security rules, the full catalog of insurable things, and a playable
@@ -39,6 +39,7 @@ the public-records card and the agency replies are labeled demo data.
 | [supabase/schema.sql](supabase/schema.sql) | Client-facing tables with Row Level Security, the storage bucket, realtime, and triggers. |
 | [supabase/tests/rls.test.mjs](supabase/tests/rls.test.mjs) | Runs the schema on a real Postgres engine and tries to break the security rules. |
 | [prototype/index.html](prototype/index.html) | The playable prototype. |
+| [art/](art) | **For the artist.** The art guide PDF (style, sizes, file names and a checklist of every image, in three rounds), the asset manifest the app loads art by, and the folders returned art goes into. |
 
 ```bash
 cd risk-manager
@@ -59,6 +60,10 @@ npm run typecheck       # catalog types
 | **Taps only, in the bottom third of the screen.** Targets of 56 px or more, one question per screen, no gestures. | The audience runs from 8 to 88. |
 | **"I don't know" is always a good answer**, and it counts toward progress. | Honesty shouldn't be penalized, and it tells the agent what to ask. |
 | **Start playing before signing up**, then save with a 6-digit email code instead of a magic link. | Delight before forms. Magic links break on phones because they open in the wrong browser. |
+| **Clients can save without a login.** It works like a submitted form: Loomis gets the whole world and reaches out, and the device is signed out. | Loomis's call. Some people will never keep a login, and this still gets their household to the agency. It's the only path from an anonymous session to staff, so it's narrow: once per world, with a way to reach them. |
+| **New York and Pennsylvania rules are built in.** NY no-fault PIP and SUM; PA first party benefits, full vs. limited tort, stacking, and mine subsidence. Out-of-state clients can build, then get a friendly "message us". | Loomis is licensed in NY and PA. A generic "PIP" card would be wrong in both. |
+| **Roxie is the guide, not the advisor.** She welcomes, gives tips, celebrates, and carries requests to HQ. | Advice comes from a licensed agent. |
+| **"Response times may vary — we'll get to you ASAP."** | No promise the team can't keep yet. |
 | **No Zillow.** Use a property-data provider (RentCast, with ATTOM as fallback) for the "we found your house" moment. | Zillow's data isn't realistically available to an agency. Records are shown as "Is this right?", never saved silently. |
 | **No price estimates in v1.** The budget records what the client *wants* to spend per line. | A wrong price in a game is worse than none. Real prices come from carriers through the agent. |
 | **No SSNs, license numbers, health details or bank info.** | Collect what's needed to quote, not to bind. That shrinks the damage if anything ever leaks. |
@@ -92,7 +97,14 @@ repository this planning session could reach. To build it:
 
 ## What we need from Loomis
 
-See [GAME_DESIGN.md §14](docs/GAME_DESIGN.md#14-decisions-needed-from-loomis):
-licensed states, which lines you write (tick them in COVERAGE_TREE.md), the
-mascot, the art budget, a reply-time promise, staff names and photos, and
-whether to allow starting before sign-up.
+Decisions so far are recorded in
+[GAME_DESIGN.md §14](docs/GAME_DESIGN.md#14-decisions). Still open:
+
+- **Art.** Hand [the art guide PDF](art/Loomis-Risk-Manager-Art-Brief.pdf) to
+  the artist and send finished files back in batches, Round 1 first.
+- **Confirm earthquake and event coverage** can actually be placed (in
+  [COVERAGE_TREE.md](docs/COVERAGE_TREE.md)).
+- **Brand colors**, if Loomis has official ones.
+- **Counsel and E&O review**, using the New York and Pennsylvania checklist
+  in [TECHNICAL_DESIGN.md §5.4](docs/TECHNICAL_DESIGN.md#54-regulatory-checklist-confirm-with-counsel-and-the-eo-carrier).
+- **Staff names and photos**, whenever you're ready.

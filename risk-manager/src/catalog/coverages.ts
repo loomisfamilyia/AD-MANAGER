@@ -14,7 +14,10 @@ import type { Coverage, CoverageOption } from "./types.ts";
  *     without its base). "Needs collision OR comprehensive" can't be written,
  *     so those are left off.
  *   - Rules differ by state and by company. Where it matters the text says
- *     "Rules vary by state" instead of describing one state's rule.
+ *     "Rules vary by state" instead of describing one state's rule. When a rule
+ *     is too different to share one coverage (New York and Pennsylvania auto
+ *     no-fault), each state gets its own coverage with `states` set, and the
+ *     app only shows it to clients who live there.
  *   - Nothing here promises coverage. "Can help pay" is deliberate.
  */
 
@@ -26,7 +29,7 @@ const opts = (...pairs: [string, string][]): CoverageOption[] =>
 // Option sets reused across coverages
 // ---------------------------------------------------------------------------
 
-/** Split auto liability limits: per person / per crash. */
+/** Split auto limits: per person / per crash. */
 const BI_LIMITS = opts(
   ["25_50", "$25,000 / $50,000"],
   ["50_100", "$50,000 / $100,000"],
@@ -34,6 +37,22 @@ const BI_LIMITS = opts(
   ["250_500", "$250,000 / $500,000"],
   ["500_500", "$500,000 / $500,000"],
 );
+
+/**
+ * The lowest liability amount the client's state allows. It stands in for the
+ * lowest fixed tier because the minimums differ: one fixed number would be
+ * wrong for either New York or Pennsylvania.
+ */
+const STATE_MINIMUM: CoverageOption = { value: "state_min", label: "State minimum" };
+
+/** Auto injury liability: the state minimum, then the higher fixed tiers. */
+const BI_LIABILITY_LIMITS: CoverageOption[] = [STATE_MINIMUM, ...BI_LIMITS.slice(1)];
+
+/** Auto property damage liability: the state minimum, then the higher fixed tiers. */
+const PD_LIABILITY_LIMITS: CoverageOption[] = [
+  STATE_MINIMUM,
+  ...opts(["50k", "$50,000"], ["100k", "$100,000"], ["250k", "$250,000"]),
+];
 
 /** Single-limit liability for homes, boats, RVs and the like. */
 const LIABILITY_LIMITS = opts(
@@ -67,19 +86,20 @@ export const COVERAGES: Coverage[] = [
     line: "auto",
     label: "Injury to others",
     plainEnglish:
-      "Can help pay other people's medical bills if you cause a crash. The two numbers are the most per person, then per crash. Rules vary by state.",
+      "Can help pay other people's medical bills if you cause a crash. The two numbers are the most per person, then per crash. State minimum is the lowest amount your state allows. Rules vary by state.",
     tier: "essential",
     protects: ["car"],
-    limitOptions: BI_LIMITS,
+    limitOptions: BI_LIABILITY_LIMITS,
   },
   {
     id: "auto_liability_pd",
     line: "auto",
     label: "Damage to others' property",
-    plainEnglish: "Can help pay to fix other people's cars, fences or buildings if you cause a crash.",
+    plainEnglish:
+      "Can help pay to fix other people's cars, fences or buildings if you cause a crash. State minimum is the lowest amount your state allows.",
     tier: "essential",
     protects: ["car"],
-    limitOptions: opts(["25k", "$25,000"], ["50k", "$50,000"], ["100k", "$100,000"], ["250k", "$250,000"]),
+    limitOptions: PD_LIABILITY_LIMITS,
   },
   {
     id: "auto_um_bi",
@@ -91,24 +111,103 @@ export const COVERAGES: Coverage[] = [
     protects: ["car"],
     limitOptions: BI_LIMITS,
   },
+
+  // --- New York: no-fault ----------------------------------------------------
+  // New York and Pennsylvania are both "no-fault" states, so the generic
+  // medical-payments and PIP coverages don't fit. Each state gets its own.
   {
-    id: "auto_med_pay",
+    id: "auto_pip_ny",
     line: "auto",
-    label: "Medical payments",
-    plainEnglish: "Can help pay medical bills for you and your passengers after a crash, no matter who caused it.",
-    tier: "recommended",
+    label: "Injury protection (no-fault)",
+    plainEnglish:
+      "Personal Injury Protection, or PIP. Required in New York. Can help pay medical bills and lost wages for you and your passengers, no matter who caused the crash. Basic coverage is $50,000 per person.",
+    tier: "essential",
     protects: ["car"],
-    limitOptions: MED_PAY_SMALL,
+    states: ["NY"],
   },
   {
-    id: "auto_pip",
+    id: "auto_apip_ny",
     line: "auto",
-    label: "Personal injury protection",
+    label: "Additional PIP",
     plainEnglish:
-      "Can help pay medical bills and some lost pay for you and your passengers, no matter who caused the crash. Some states require it. Rules vary by state.",
+      "Can raise your no-fault protection above the basic $50,000, so more of your bills and lost pay can be paid. Ask Loomis which amounts you can pick.",
     tier: "recommended",
     protects: ["car"],
-    limitOptions: opts(["2500", "$2,500"], ["5000", "$5,000"], ["10000", "$10,000"], ["50000", "$50,000"]),
+    states: ["NY"],
+    requires: ["auto_pip_ny"],
+  },
+  {
+    id: "auto_obel_ny",
+    line: "auto",
+    label: "Optional Basic Economic Loss",
+    plainEnglish:
+      "Optional Basic Economic Loss, or OBEL. Adds $25,000 of no-fault money that you can direct to the costs that matter most to you, like medical bills or lost pay.",
+    tier: "extra",
+    protects: ["car"],
+    states: ["NY"],
+    requires: ["auto_pip_ny"],
+  },
+  {
+    id: "auto_sum_ny",
+    line: "auto",
+    label: "Supplementary UM/UIM (SUM)",
+    plainEnglish:
+      "Supplementary Uninsured/Underinsured Motorists, or SUM. Can raise your protection when the other driver has no insurance, or not enough. It usually goes up to your own liability limits.",
+    tier: "recommended",
+    protects: ["car"],
+    states: ["NY"],
+  },
+
+  // --- Pennsylvania: no-fault ------------------------------------------------
+  {
+    id: "auto_first_party_pa",
+    line: "auto",
+    label: "First party medical benefits",
+    plainEnglish:
+      "Required in Pennsylvania. Can help pay your medical bills after a crash, no matter who caused it. You must have at least $5,000.",
+    tier: "essential",
+    protects: ["car"],
+    states: ["PA"],
+    limitOptions: opts(
+      ["5000", "$5,000"],
+      ["10000", "$10,000"],
+      ["25000", "$25,000"],
+      ["50000", "$50,000"],
+      ["100000", "$100,000"],
+    ),
+  },
+  {
+    id: "auto_first_party_extra_pa",
+    line: "auto",
+    label: "Extra first party benefits",
+    plainEnglish:
+      "Can add more first party benefits, like money for lost income, funeral costs and accidental death benefits. Ask Loomis which ones you can pick.",
+    tier: "extra",
+    protects: ["car"],
+    states: ["PA"],
+    requires: ["auto_first_party_pa"],
+  },
+  {
+    id: "auto_tort_option_pa",
+    line: "auto",
+    label: "Full tort or limited tort",
+    plainEnglish:
+      "In Pennsylvania you pick one. Full tort keeps your right to sue for pain and suffering after a crash, not just for bills. Limited tort costs less, but it limits that right unless the injury is serious. Ask Loomis to talk it through with you.",
+    tier: "essential",
+    protects: ["car"],
+    states: ["PA"],
+    limitOptions: opts(["full_tort", "Full tort"], ["limited_tort", "Limited tort"]),
+  },
+  {
+    id: "auto_um_stacking_pa",
+    line: "auto",
+    label: "Stacked UM/UIM limits",
+    plainEnglish:
+      "Stacking adds up your uninsured and underinsured driver limits for each car you insure. That can mean more protection if the other driver has too little insurance. It costs a bit more.",
+    tier: "recommended",
+    protects: ["car"],
+    states: ["PA"],
+    requires: ["auto_um_bi"],
   },
   {
     id: "auto_collision",
@@ -885,6 +984,18 @@ export const COVERAGES: Coverage[] = [
     limitOptions: opts(["10000", "$10,000"], ["25000", "$25,000"]),
   },
   {
+    id: "home_mine_subsidence_pa",
+    line: "home",
+    label: "Mine subsidence",
+    plainEnglish:
+      "Can help pay for damage if old underground mines settle or collapse under a home. Regular home policies often leave this out. Pennsylvania runs a low-cost state program for it, and Loomis can tell you if it fits where you live.",
+    tier: "recommended",
+    // One coverage, attached to every kind of home that could sit over an old mine
+    // (like flood and earthquake, it follows the property, not the budget line).
+    protects: [...OWNED_HOMES, "mobile_home", "condo_owned", "landlord_property"],
+    states: ["PA"],
+  },
+  {
     id: "home_equipment_breakdown",
     line: "home",
     label: "Equipment breakdown",
@@ -1145,7 +1256,7 @@ export const COVERAGES: Coverage[] = [
     line: "flood",
     label: "Flood: your home",
     plainEnglish:
-      "Can help pay to fix your home after flood water. Home policies usually do not include flood, and there is often a 30-day wait before it starts, so it helps to ask early.",
+      "Can help pay to fix your home or building after flood water. Regular home policies usually leave flood out, and there is often a 30-day wait before flood insurance starts, so it helps to ask early.",
     tier: "recommended",
     protects: ["house_owned", "vacation_home", "mobile_home", "condo_owned", "landlord_property"],
     limitOptions: opts(["100k", "$100,000"], ["150k", "$150,000"], ["250k", "$250,000"]),
@@ -1155,9 +1266,18 @@ export const COVERAGES: Coverage[] = [
     id: "flood_contents",
     line: "flood",
     label: "Flood: your belongings",
-    plainEnglish: "Can help pay to replace your things after flood water. Renters can add this too.",
+    plainEnglish:
+      "Can help pay to replace your things after flood water. If you rent, you can add this on its own. It is for your belongings only, not the building.",
     tier: "recommended",
-    protects: ["house_owned", "vacation_home", "mobile_home", "condo_owned", "home_rented", "landlord_property"],
+    protects: [
+      "house_owned",
+      "vacation_home",
+      "mobile_home",
+      "condo_owned",
+      "home_rented",
+      "college_housing",
+      "landlord_property",
+    ],
     limitOptions: opts(["25k", "$25,000"], ["50k", "$50,000"], ["100k", "$100,000"]),
     deductibleOptions: opts(["1000", "$1,000"], ["2000", "$2,000"], ["5000", "$5,000"]),
   },
@@ -1428,7 +1548,7 @@ export const COVERAGES: Coverage[] = [
   },
 
   // =========================================================================
-  // HOUSEHOLD-WIDE: travel, events, identity and cyber
+  // HOUSEHOLD-WIDE: travel, events and personal cyber
   // =========================================================================
   {
     id: "travel_cancellation",
@@ -1477,7 +1597,7 @@ export const COVERAGES: Coverage[] = [
   },
   {
     id: "identity_restoration",
-    line: "identity_theft",
+    line: "cyber",
     label: "Identity theft help",
     plainEnglish:
       "Can help pay for the time and costs to fix your records and accounts if someone uses your identity.",
@@ -1486,11 +1606,36 @@ export const COVERAGES: Coverage[] = [
     limitOptions: opts(["15k", "$15,000"], ["25k", "$25,000"], ["50k", "$50,000"]),
   },
   {
-    id: "cyber_personal",
-    line: "identity_theft",
-    label: "Online & cyber protection",
+    id: "cyber_online_fraud",
+    line: "cyber",
+    label: "Online fraud",
+    plainEnglish: "Can help pay you back when money is stolen through an online scam or a hacked account.",
+    tier: "recommended",
+    protects: ["household"],
+  },
+  {
+    id: "cyber_extortion",
+    line: "cyber",
+    label: "Cyber extortion",
     plainEnglish:
-      "Can help with problems online, like hacked accounts, online scams and cyberbullying.",
+      "Can help with the costs if someone locks your devices, or threatens to share your files, unless you pay them.",
+    tier: "extra",
+    protects: ["household"],
+  },
+  {
+    id: "cyber_data_restoration",
+    line: "cyber",
+    label: "Data & device restoration",
+    plainEnglish: "Can help pay to fix or restore your computers, phones and files after a virus or a hack.",
+    tier: "extra",
+    protects: ["household"],
+  },
+  {
+    id: "cyber_bullying",
+    line: "cyber",
+    label: "Cyberbullying help",
+    plainEnglish:
+      "Serious online bullying is hard on a family. This can help pay for support, like counseling or a temporary move to a new place. Ask Loomis what is included.",
     tier: "extra",
     protects: ["household"],
   },
