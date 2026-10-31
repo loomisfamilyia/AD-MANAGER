@@ -1,0 +1,21 @@
+{
+  "name": "loomis-personal-risk-manager",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Planning stage for the Loomis Personal Risk Manager: catalog, schema, prototype",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "catalog:check": "node --experimental-strip-types scripts/catalog-to-markdown.ts",
+    "test:rls": "node supabase/tests/rls.test.mjs",
+    "test": "npm run typecheck && npm run catalog:check && npm run test:rls"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.8.0"
+  }
+}
