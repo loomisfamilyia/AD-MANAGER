@@ -18,7 +18,7 @@ h1,h2,h3,.hf{font-family:var(--hf);margin:0;line-height:1.2}
 p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;text-align:inherit}
 :focus-visible{outline:3px solid #0a1f66;outline-offset:3px;border-radius:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-#phone{position:relative;width:100%;max-width:430px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#dff1ff;box-shadow:0 0 60px rgba(20,38,61,.25)}
+#phone{position:relative;width:100%;max-width:430px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;overflow:clip;background:#dff1ff;box-shadow:0 0 60px rgba(20,38,61,.25)}
 #app{position:absolute;inset:0}
 .screen{position:absolute;inset:0;display:none;overflow:hidden}.screen.on{display:block;animation:fadein .5s both}
 #badge{position:absolute;z-index:90;left:50%;top:calc(4px + env(safe-area-inset-top));transform:translateX(-50%);background:rgba(20,38,61,.88);color:#fff;font:600 .78rem/1 system-ui;padding:6px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;max-width:calc(100% - 16px)}
@@ -53,10 +53,12 @@ p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:
 .ic::before,.ic::after{content:"";position:absolute;background:#fff;border-radius:50%}.ic::before{width:90px;height:90px;left:30px;top:-40px}.ic::after{width:70px;height:70px;right:34px;top:-28px}
 #intro:not(.open) .ic{transform:none!important;opacity:1}
 #intro.open .ic{opacity:.92}html.rm #intro.open .ic{opacity:0}
-.guide{position:absolute;left:16px;right:16px;top:calc(var(--bt) + 24px);display:flex;gap:10px;align-items:flex-end;opacity:0;transform:translateY(12px);transition:opacity .8s 1.8s,transform .8s 1.8s}
+.in-rox{position:absolute;left:calc(50% + 14px);top:calc(46% - 56px);width:122px;opacity:0;transition:opacity .8s 1.4s}#intro.open .in-rox{opacity:1}
+.rname{display:block;width:max-content;margin:-6px auto 0;background:#fff;border-radius:99px;padding:2px 14px;font:800 .95rem var(--hf);color:var(--pri-d);box-shadow:0 3px 8px rgba(20,38,61,.2)}
+.guide{position:absolute;left:16px;right:16px;top:calc(46% + 118px);opacity:0;transform:translateY(12px);transition:opacity .8s 1.8s,transform .8s 1.8s}
 #intro.open .guide{opacity:1;transform:none}
-.guide .g{font-size:46px;line-height:1;animation:bob 2.6s ease-in-out infinite}
 .bubble{position:relative;background:#fff;border-radius:22px 22px 22px 6px;padding:14px 16px;box-shadow:var(--sh);font-size:1.05rem;font-weight:600}
+.bubble.up{border-radius:22px}.bubble.up::before{content:"";position:absolute;top:-11px;left:calc(50% + 52px);border:12px solid transparent;border-top:0;border-bottom-color:#fff}
 .foot-fixed{position:absolute;left:18px;right:18px;bottom:calc(22px + env(safe-area-inset-bottom))}
 #intro .foot-fixed{opacity:0;transition:opacity .8s 2.2s}#intro.open .foot-fixed{opacity:1}
 .char-wrap{position:absolute;inset:calc(var(--bt) + 8px) 0 0;padding:16px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;overflow:auto}
@@ -65,6 +67,12 @@ p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:
 .av[aria-checked=true]{border-color:var(--pri);background:#e3ebff;transform:scale(1.06)}
 .av[aria-checked=true]::after{content:"✓";position:absolute;right:4px;top:2px;font:800 .9rem var(--hf);background:var(--pri);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center}
 .prev{font-size:84px;line-height:1;text-align:center;animation:bob 3s ease-in-out infinite}
+/* Roxie, the guide */
+.rox{display:block;position:relative;flex:none}.rox svg{filter:drop-shadow(0 3px 3px rgba(20,38,61,.18))}
+.rx-tail{transform-box:fill-box;transform-origin:10% 92%;animation:wag 1.15s ease-in-out infinite}
+.rx-head{transform-box:fill-box;transform-origin:50% 96%;animation:rtilt 5.5s ease-in-out infinite}
+@keyframes wag{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(14deg)}}
+@keyframes rtilt{0%,100%{transform:rotate(0)}40%{transform:rotate(2.6deg)}75%{transform:rotate(-2.2deg)}}
 /* top bar, quest, bar */
 #hud{position:absolute;left:0;right:0;top:var(--bt);z-index:20;display:flex;flex-direction:column;gap:2px;pointer-events:none}#hud>*{pointer-events:auto}
 #top{display:flex;align-items:center;gap:4px;padding:4px 6px;pointer-events:none}#top>*{pointer-events:auto}
@@ -81,7 +89,7 @@ p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:
 #quest.on,body.protect #pstrip{display:block}body.protect #quest{display:none!important}
 .qrow{display:flex;align-items:center;gap:8px}.qrow .qt{flex:1;min-width:0}.qt b{display:block;font:800 1rem/1.2 var(--hf)}.qt span{display:block;font-size:.85rem;color:var(--mut);line-height:1.25}
 #quest.min .qt span,#quest.min .qfoot{display:none}
-.qfoot{font-size:.8rem;color:var(--mut);font-weight:700;margin-top:2px}
+.qfoot{font-size:.8rem;color:var(--mut);font-weight:700;margin-top:2px;display:flex;align-items:center}
 #quest .btn{min-height:56px;padding:0 14px}
 #quest.done{animation:qpulse .8s}
 .qcheck{width:34px;height:34px;flex:none;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-weight:900;color:#3b2a00}
@@ -212,13 +220,50 @@ body.protect.dense .shd .w{display:none}body.protect.dense .shd svg{width:calc(2
 .pt{position:absolute;font-size:18px;line-height:1;animation:burst 1.4s cubic-bezier(.2,.7,.3,1) both;will-change:transform}
 .pt.c{width:10px;height:14px;border-radius:2px;font-size:0}
 .flt{position:absolute;font:900 1.5rem var(--hf);color:#8a5a00;text-shadow:0 2px 0 #fff,0 0 8px #fff;animation:floatup 1.3s ease-out both;transform:translate(-50%,-50%)}
-.plane{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px}
+.carry{position:absolute;left:0;top:0;width:44px;margin:-22px 0 0 -22px;will-change:transform,opacity}
 #banner{position:absolute;inset:0;z-index:70;background:radial-gradient(circle at 50% 40%,rgba(255,236,160,.97),rgba(255,255,255,.97));display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:30px}
 #banner.on{display:flex;animation:fadein .6s both}#banner .big{font-size:6rem;line-height:1;animation:pop .9s both}#banner h2{font-size:2.1rem;color:var(--pri-d)}#banner p{font-size:1.3rem;font-weight:700}
 #toasts{position:absolute;left:12px;right:12px;bottom:calc(var(--barh) + 98px);z-index:75;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{pointer-events:auto;background:#14263d;color:#fff;border-radius:18px;padding:10px 16px;font-weight:700;box-shadow:var(--sh);display:flex;gap:12px;align-items:center;animation:toastin .5s both;max-width:100%}.toast .btn{min-height:56px;background:var(--gold);color:#3b2a00;border-color:#b98500;padding:0 18px}.toast.out{animation:toastout .4s both}
 #confirm{position:absolute;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(10,31,60,.55);padding:24px}#confirm.on{display:flex}
 #confirm .box{background:#fff;border-radius:24px;padding:22px;width:100%;box-shadow:var(--sh);animation:pop .4s both}
+/* Roxie at HQ, tips from Roxie, save prompt, final card, save sheet */
+#hq .hqr{position:absolute;left:calc(-22px/var(--s));bottom:calc(25px/var(--s));width:calc(46px/var(--s));pointer-events:none;transition:opacity .45s;transform-origin:50% 100%}
+#hq .hqr.away{opacity:0}#hq .hqr.hop{animation:rhop .62s ease-out 3}
+#hq .woof{position:absolute;left:50%;bottom:100%;margin-bottom:calc(-2px/var(--s));background:#fff;border-radius:calc(12px/var(--s)) calc(12px/var(--s)) calc(12px/var(--s)) calc(3px/var(--s));padding:calc(2px/var(--s)) calc(8px/var(--s));font:800 calc(.8rem/var(--s)) var(--hf);color:var(--pri-d);box-shadow:0 2px 8px rgba(0,0,0,.2);opacity:0;white-space:nowrap}
+#hq .hqr.hop .woof{animation:woof 1.9s both}
+@keyframes rhop{0%,100%{transform:none}28%{transform:translateY(-40%) scale(.94,1.1)}52%{transform:none}68%{transform:scale(1.1,.88)}}
+@keyframes woof{0%{opacity:0;transform:scale(.5)}15%,75%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes fpulse{0%,100%{opacity:1}50%{opacity:.55}}
+.qrx{display:inline-block;width:30px;height:26px;vertical-align:-7px;margin-right:6px;flex:none}.qfoot .qrx{width:28px;height:24px;vertical-align:0}.qrx svg{display:block;width:100%;height:100%}
+.tip::before,.hint::before,.rxc::before{content:"";float:left;width:34px;height:30px;margin:-2px 10px 2px -3px;background:var(--rxh) center/contain no-repeat}
+.tip,.hint,.rxc{display:flow-root}.hint::before{width:30px;height:26px}
+.rxc{border:2.5px solid var(--line);border-radius:20px;padding:14px 14px 12px;background:#fff;font-size:1.08rem;font-weight:600;line-height:1.45}.rxc::before{width:40px;height:34px}
+.msg.sys{align-self:center;background:#fff8dc;color:#5c4300;font-size:.95rem;font-weight:700;text-align:center;border-radius:14px;max-width:92%}
+#menuBtn{position:relative}#menuBtn.saved::after{content:"✓";position:absolute;right:2px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font:800 .8rem/20px var(--hf);text-align:center;border:2px solid #fff;box-sizing:content-box;margin:-2px -2px 0 0}
+.okc{margin:12px 0;box-shadow:none;background:#f1fbf5;border:2.5px solid var(--ok)}.okc p{margin-top:4px}
+#rprompt{position:absolute;left:12px;right:12px;bottom:calc(var(--barh) + 98px);z-index:31;display:none;flex-direction:column;gap:10px;background:#fff;border-radius:24px;box-shadow:var(--sh);padding:12px;border:3px solid var(--pri)}
+#rprompt.on{display:flex;animation:pop .5s both}body.rp #toasts{bottom:calc(var(--barh) + 320px)}
+.rx-say{display:flex;gap:10px;align-items:flex-end}.rx-say .rox{width:92px}.rx-say .bubble{flex:1;min-width:0}#rprompt .rox{width:64px}
+#done{position:absolute;inset:0;z-index:72;background:radial-gradient(circle at 50% 26%,#fff3c4,#e9f4ff 72%);display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:24px 22px calc(24px + env(safe-area-inset-bottom));overflow-y:auto}
+#done.on{display:flex;animation:fadein .6s both}#done>:first-child{margin-top:auto}#done>:last-child{margin-bottom:auto}
+#done .rox{width:168px}#done h2{font-size:2rem;color:var(--pri-d)}#done .lead{font-size:1.2rem;font-weight:700}#done .stack{width:100%;margin-top:4px}
+.opt{display:flex;flex-direction:column;gap:4px;align-items:flex-start;width:100%;min-height:84px;padding:14px 16px;border-radius:22px;background:#fff;border:3px solid var(--line);text-align:left}
+.opt b{font:800 1.25rem/1.2 var(--hf)}.opt span{font-size:1rem;color:var(--mut);line-height:1.3}.opt:active{transform:scale(.98)}
+.opt.pri{background:var(--pri);border-color:var(--pri-d);box-shadow:0 5px 0 var(--pri-d);color:#fff}.opt.pri span{color:#e3ebff}.opt.pri:active{transform:translateY(3px);box-shadow:0 2px 0 var(--pri-d)}
+.opt .tag{background:var(--gold);color:#3b2a00;font:800 .82rem var(--hf);border-radius:99px;padding:2px 10px;margin-bottom:2px}
+.fld{margin-bottom:12px}.lbl{display:block;font:800 1.05rem var(--hf);margin:0 0 6px}
+.code{letter-spacing:.42em;text-align:center;font-size:2.3rem;padding-left:calc(18px + .42em)}.code::placeholder{color:#b3c0d2}
+.ta{min-height:128px;padding:14px 18px;font:500 1.15rem/1.35 system-ui,sans-serif;resize:none}
+.pp-hero{display:flex;justify-content:center;align-items:flex-end;gap:4px;margin:0 0 4px}.pp-hero .rox{width:126px}.pp-hero .padl{width:72px;margin-bottom:4px}
+.glint{opacity:.9;transform-box:fill-box;transform-origin:center;animation:glint 2.6s ease-in-out infinite}@keyframes glint{0%,100%{opacity:.3;transform:scale(.75)}50%{opacity:1;transform:scale(1.12)}}
+.pp-t{font-size:1.75rem;text-align:center;margin:8px 0 12px;color:var(--pri-d);text-wrap:balance}
+.plist{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.pcard{background:#f3f7ff;border:2.5px solid var(--line);border-radius:20px;padding:14px 16px}
+.pcard h3{display:flex;gap:10px;align-items:center;font:800 1.25rem/1.2 var(--hf)}.pcard h3 .e{font-size:1.9rem;line-height:1;flex:none}.pcard p{font-size:1.125rem;line-height:1.4;margin-top:6px}
+.pfoot{font-size:1rem;color:var(--mut);line-height:1.45;margin-top:16px}.pclose{font:800 1.25rem/1.3 var(--hf);color:var(--pri-d);text-align:center;margin:16px 0 8px;text-wrap:balance}
+.plink{text-decoration:underline;text-underline-offset:4px}
+.chip.big{flex:1 1 calc(50% - 10px);min-height:72px;justify-content:center;font:800 1.25rem var(--hf)}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 @keyframes vin{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}@keyframes vinb{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -248,6 +293,9 @@ body.protect.dense .shd .w{display:none}body.protect.dense .shd svg{width:calc(2
 html.rm .bob,html.rm .wob,html.rm .cloud,html.rm .in-av,html.rm .guide .g,html.rm .prev,html.rm #addBtn.pulse,html.rm .flag,html.rm #hq.wave .flag,html.rm .pulse-s,html.rm .shd.requested svg,html.rm #avatar.hop,html.rm .scan::after,html.rm .qcheck{animation:none!important}
 html.rm .dropping .em,html.rm .dropping .bld,html.rm .rising .bld,html.rm .terr.in,html.rm .fl,html.rm .msg,html.rm .done-hero .big,html.rm #banner .big,html.rm .ub.on,html.rm #confirm .box,html.rm .polaroid{animation:fadein .9s both!important}
 html.rm .pt,html.rm .flt,html.rm .dust{display:none}
+html.rm .rx-tail,html.rm .rx-head,html.rm .glint,html.rm .guide{animation:none!important;transform:none!important}
+html.rm #hq .hqr.hop{animation:fpulse 1.1s 2!important}html.rm #hq .hqr.hop .woof{animation:fadein 1s both!important;transform:none}
+html.rm #rprompt.on,html.rm #done.on{animation:fadein .6s both!important}
 html.rm .view,html.rm .toast{animation:fadein .3s both!important}
 html.rm .toast.out{animation:fadeout .3s both!important}
 html.rm .sheet,html.rm .sheet.open{transform:none!important;transition:opacity .3s,visibility 0s!important}html.rm .sheet{opacity:0}html.rm .sheet.open{opacity:1}
@@ -264,7 +312,8 @@ html.rm .ic{transition:opacity 1.6s!important;transform:none!important}html.rm .
   <section id="intro" class="screen" aria-label="Welcome">
    <div class="in-field"></div><div class="in-av" aria-hidden="true">🧍</div>
    <div class="ic" style="left:12%;top:36%"></div><div class="ic" style="left:42%;top:30%"></div><div class="ic" style="left:2%;top:50%"></div><div class="ic" style="left:50%;top:48%"></div><div class="ic" style="left:24%;top:42%"></div>
-   <div class="guide"><div class="g" aria-hidden="true">🦉</div><div class="bubble" role="status">Welcome! This is your world. Let's fill it with the people and things you love — then we'll help you protect them.</div></div>
+   <div class="in-rox" aria-hidden="true"><span class="rox" id="introRox"></span><span class="rname">Roxie</span></div>
+   <div class="guide"><div class="bubble up" role="status"><b class="sr">Roxie says: </b>Hi! I'm Roxie, the Loomis family's dog. This is your world. Let's fill it with the people and things you love — then we'll help you protect them.</div></div>
    <div class="foot-fixed"><button class="btn pri blk" id="beginBtn">Let's begin</button></div>
   </section>
   <section id="char" class="screen" aria-label="Make your character">
@@ -302,6 +351,7 @@ html.rm .ic{transition:opacity 1.6s!important;transform:none!important}html.rm .
    <div id="quest" class="glass"></div>
    <div id="pstrip" class="glass"></div></div>
    <div id="cap" aria-live="polite"><span></span></div>
+   <div id="rprompt" role="region" aria-label="A suggestion from Roxie"></div>
    <button id="chatBtn" aria-label="Chat with Loomis"><span class="i" aria-hidden="true">💬</span>Loomis<span class="ub" id="ubChat"></span></button>
    <nav id="bar" aria-label="Main">
     <button class="bb" id="stuffBtn"><span class="i" aria-hidden="true">🧺</span>My stuff</button>
@@ -312,11 +362,12 @@ html.rm .ic{transition:opacity 1.6s!important;transform:none!important}html.rm .
  </div>
  <div id="fx" aria-hidden="true"></div>
  <div id="banner" role="dialog" aria-modal="true" aria-labelledby="banH"><div class="big" aria-hidden="true" id="banE">🌳</div><h2 id="banH">Your world grew!</h2><p id="banP"></p><button class="btn pri" id="banBtn" style="min-width:220px">Keep exploring</button></div>
+ <div id="done" role="dialog" aria-modal="true" aria-labelledby="doneH"><div class="rox" id="doneRox" aria-hidden="true"></div><h2 id="doneH">Saved with Loomis!</h2><p class="lead" id="doneP"></p><p class="plan-line">Your world is a plan, not insurance. (Prototype: nothing was really sent.)</p><div class="stack"><button class="btn pri blk" id="doneBack">Back to my world (prototype only — the real app signs you out here)</button><button class="btn blk" id="doneNew">Start over</button></div><p class="note" id="doneLic"></p></div>
  <div id="scrim"></div>
  <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="grab" aria-hidden="true"></div><div id="sbody"></div></div>
  <div id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="cfT" aria-describedby="cfD"><div class="box"><h2 id="cfT" style="font-size:1.4rem"></h2><p id="cfD" style="margin:8px 0 18px;color:var(--mut)"></p><div class="stack"><button class="btn pri" id="cfYes"></button><button class="btn" id="cfNo">Never mind</button></div></div></div>
  <div id="toasts" role="status" aria-live="polite"></div>
- <div id="badge">Prototype · nothing leaves this device</div>
+ <div id="badge">Prototype · nothing reaches Loomis</div>
 </div>
 <script>
 'use strict';
@@ -335,7 +386,7 @@ const CATS=[
  {id:'work',l:'Work',e:'💼',tag:'Your job or business'}];
 const LINES={auto:['Auto','🚗'],home:['Home','🏠'],renters:['Renters','🔑'],landlord:['Landlord','🏘️'],flood:['Flood','🌊'],umbrella:['Umbrella','☂️'],
  valuables:['Valuables','💎'],motorcycle:['Motorcycle','🏍️'],recreational:['ATV & snow toys','🛺'],watercraft:['Boat & jet ski','🚤'],rv:['RV & camper','🚐'],
- collector:['Classic car','🏎️'],pet:['Pet','🐾'],life:['Life','💙'],disability:['Disability','🩹'],health:['Health','🩺'],identity:['Identity theft','🪪'],commercial:['Business','🏪']};
+ collector:['Classic car','🏎️'],pet:['Pet','🐾'],life:['Life','💙'],disability:['Disability','🩹'],health:['Health','🩺'],cyber:['Personal cyber','💻'],travel:['Trip protection','🧳'],commercial:['Business','🏪']};
 const COV={
  life_term:['Term life','Pays your family a lump sum if you pass away during a set number of years.','life'],
  life_whole:['Whole life','Life insurance that lasts your whole life and can build cash value.','life'],
@@ -363,7 +414,8 @@ const COV={
  job_life:['Life insurance of your own','Coverage that stays with you, even if you change jobs.','life'],
  biz:['Business insurance','Talk with Loomis about business insurance.'],
  umb:['Umbrella liability','Extra protection on top of your home and auto plans if a big claim happens.','umbrella'],
- idt:['Identity theft help','Helps you sort things out if someone uses your name or accounts.','identity']};
+ cyber:['Personal cyber','Identity theft help and online fraud help: if someone uses your name or accounts, or a scam costs you money.','cyber'],
+ trip:['Trip protection','Helps with costs if a trip is cancelled or cut short, or something goes wrong while you are away.','travel']};
 const KIND={};
 function K(id,cat,l,e,line,zone,qs,cov,def,x){KIND[id]=Object.assign({id,cat,l,e,line,zone,qs,cov,def},x)}
 const nickQ=(chips)=>Q('nick','What do you call it?','text',{s:'Nickname',chips,help:'Any name you like.'});
@@ -421,11 +473,11 @@ K('job','work','Job','💼','life','town',[
 K('biz','work','Business','🏪','commercial','town',[
  Q('name','What is your business called?','text',{s:'Business name',req:1}),Q('desc','What does it do, in a few words?','text',{s:'What it does',chips:['Shop','Farm','Services']})],
  ['biz'],'My business',{nameQ:'name',stop:1});
-K('family','family','Whole family','☂️','umbrella','',[],['umb','idt'],'Whole family',{});
+K('family','family','Whole family','☂️','umbrella','',[],['umb','cyber','trip'],'Whole family',{});
 const LVL=[[0,'Open Field','🌱'],[1,'Homestead','🏡'],[4,'Neighborhood','🏘️'],[9,'Hometown','🏙️'],[15,'Big Sky','🌤️']];
 const AVATARS=['🧒🏻','👧🏽','👦🏿','👩🏼','👨🏾','🧑🏽','👵🏻','👴🏿'];
 const QUESTS=[['char','Make your character','Pick a name and a look.'],['home','Add your home','Where do you live?'],['people','Add your people','Family, roommates, anyone you love.'],
- ['vehicle','Add a vehicle','A car, truck, bike or RV.'],['protect','Protect something','Make a plan for one thing.'],['budget','Set your budget','Tell us what feels comfortable.'],['visit','Visit Loomis HQ','Say hello to your agency.']];
+ ['vehicle','Add a vehicle','A car, truck, bike or RV.'],['protect','Protect something','Make a plan for one thing.'],['budget','Set your budget','Tell us what feels comfortable.'],['visit','Visit Loomis HQ','Say hello to Roxie and your agency.']];
 
 /* ===================== helpers ===================== */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -445,7 +497,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* ===================== state ===================== */
 const KEY='loomis-prm-proto-v1';
 const DEF=()=>({stage:'intro',name:'',avatar:'🧑🏽',things:[],xp:0,quests:{},rev:{},soundOn:true,size:0,reduce:false,qMin:false,pMin:false,budgetSet:false,visited:false,
- budget:{period:'month',total:200,lines:{}},fam:{id:'fam',kind:'family',ans:{},cov:{},req:{}},chat:[],unread:0,lvl:0});
+ budget:{period:'month',total:200,lines:{}},fam:{id:'fam',kind:'family',ans:{},cov:{},req:{}},chat:[],unread:0,lvl:0,account:null,savedWithoutLogin:null,savePrompted:false});
 let S=DEF();
 function load(){try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);S=Object.assign(DEF(),o);S.fam=Object.assign(DEF().fam,S.fam)}}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -507,6 +559,35 @@ const ART={
  chest:()=>`<svg class="svg bld" viewBox="0 0 64 56" aria-hidden="true"><ellipse cx="32" cy="52" rx="28" ry="4" fill="rgba(0,0,0,.16)"/><rect x="6" y="22" width="52" height="28" rx="4" fill="#9a5f2b" stroke="#5a3515" stroke-width="2"/><path d="M6 26 C6 8 58 8 58 26 Z" fill="#b9753a" stroke="#5a3515" stroke-width="2"/><rect x="27" y="24" width="10" height="13" rx="2" fill="#f5b301" stroke="#9a6c00" stroke-width="1.5"/><path d="M6 36 H58" stroke="#f5b301" stroke-width="3"/></svg>`,
  hq:()=>`<svg class="svg bld" viewBox="0 0 140 150" aria-hidden="true"><ellipse cx="68" cy="132" rx="64" ry="17" fill="#7fd066" stroke="#fff" stroke-width="3"/><ellipse cx="68" cy="136" rx="52" ry="9" fill="#5cb356" opacity=".55"/><rect x="30" y="62" width="78" height="64" rx="4" fill="#fff4dc" stroke="#c9a56b" stroke-width="2"/><path d="M22 66 L69 28 L116 66 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2" stroke-linejoin="round"/><rect x="38" y="70" width="62" height="19" rx="3" fill="#fff" stroke="#1e3a8a" stroke-width="2"/><text x="69" y="84.5" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1e3a8a" font-family="ui-rounded,system-ui,sans-serif" letter-spacing="1">LOOMIS</text><rect x="60" y="98" width="18" height="28" rx="3" fill="#7a4a24"/><rect x="38" y="98" width="14" height="14" rx="2" ${WIN}/><rect x="86" y="98" width="14" height="14" rx="2" ${WIN}/><rect x="110" y="12" width="3" height="60" fill="#8a96a8"/><g class="flag"><path d="M113 14 H138 L132 21 L138 28 H113 Z" fill="#f5b301" stroke="#b98500" stroke-width="1.5"/></g></svg>`};
 const ROOFS=['#d9622b','#3b82c4','#2f9e73','#8b5cf6'];
+/* Roxie, the guide: a small shaggy grey dog with floppy ears, a Loomis-blue collar and a gold shield tag.
+   Placeholder art made of overlapping circles; an illustrator will draw the real Roxie later. */
+const RX={f:'#c9d0d8',m:'#aab3bf',d:'#727e8e',l:'#4a5565',w:'#eef1f5',k:'#1b2130'};
+const rxBlobs=(a,f)=>a.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r+2.2}" fill="${RX.l}"/>`).join('')+a.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"/>`).join('');
+const rxEar=`<path d="M34 24 C18 22 9 46 16 68 C20 78 33 74 37 62 C41 50 44 36 34 24Z" fill="${RX.d}" stroke="${RX.l}" stroke-width="2.2" stroke-linejoin="round"/><path d="M29 33 C23 40 21 54 24 64" fill="none" stroke="#8b97a7" stroke-width="2" stroke-linecap="round"/>`;
+function rxHead(o){const happy=o.happy,k=RX.k;
+ return rxBlobs([[60,48,27],[35,41,10],[85,41,10],[39,62,9],[81,62,9],[46,24,10],[64,22,10],[77,27,9]],RX.f)+
+  `<g>${rxEar}</g><g transform="translate(120 0) scale(-1 1)">${rxEar}</g>`+
+  `<ellipse cx="60" cy="61" rx="15.5" ry="11.5" fill="${RX.w}"/><circle cx="38" cy="58" r="4.6" fill="#ff8fa6" opacity=".38"/><circle cx="82" cy="58" r="4.6" fill="#ff8fa6" opacity=".38"/>`+
+  (happy?`<path d="M41 50 Q46 43 51 50 M69 50 Q74 43 79 50" fill="none" stroke="${k}" stroke-width="3" stroke-linecap="round"/>`
+   :`<circle cx="46" cy="48" r="5.2" fill="${k}"/><circle cx="74" cy="48" r="5.2" fill="${k}"/><circle cx="47.8" cy="46" r="1.9" fill="#fff"/><circle cx="75.8" cy="46" r="1.9" fill="#fff"/><circle cx="44.8" cy="50.2" r="1" fill="#fff" opacity=".8"/><circle cx="72.8" cy="50.2" r="1" fill="#fff" opacity=".8"/>`)+
+  rxBlobs([[44,35,7.2],[56,32.5,8.2],[68,33.5,7.4],[78,36.5,5.4]],'#bcc4ce')+
+  (happy?`<path d="M51 63.5 Q60 66.5 69 63.5 Q68.5 77.5 60 77.5 Q51.5 77.5 51 63.5Z" fill="#7a2a3a" stroke="${k}" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="60" cy="73.5" rx="5" ry="3.4" fill="#ff8aa0"/>`
+   :`<path d="M55.5 66 Q60 68 64.5 66 Q65 75.5 60 75.5 Q55 75.5 55.5 66Z" fill="#ff8aa0" stroke="#d9566f" stroke-width=".9"/><path d="M60 62 V66 M60 66 Q55.5 70.5 51.5 66.5 M60 66 Q64.5 70.5 68.5 66.5" fill="none" stroke="${k}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`)+
+  `<path d="M53.5 55 Q60 50.5 66.5 55 Q65 61.5 60 62.5 Q55 61.5 53.5 55Z" fill="${k}"/><ellipse cx="57.6" cy="54.4" rx="2.1" ry="1.1" fill="#fff" opacity=".75"/>`+
+  `<path d="M44 26 q-2 4.5 -.5 8.5 M54 23 q-1 4 .5 8 M67 23 q1 4 -.5 8 M77 26 q2 4.5 .5 8.5" fill="none" stroke="${RX.d}" stroke-width="1.7" stroke-linecap="round" opacity=".55"/>`}
+const rxCollar=`<path d="M40 79.5 Q60 92 80 79.5" fill="none" stroke="#1e3a8a" stroke-width="10.4" stroke-linecap="round"/><path d="M40 79.5 Q60 92 80 79.5" fill="none" stroke="#2f63ee" stroke-width="7" stroke-linecap="round"/><path d="M44 78.6 Q60 89 76 78.6" fill="none" stroke="#7fa3ff" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>`+
+ `<circle cx="60" cy="87.6" r="2" fill="#f5b301" stroke="#9a6c00" stroke-width="1"/><g transform="translate(51.2 88.2) scale(.74)"><path d="${SH_PATH}" fill="#f5b301" stroke="#9a6c00" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 8 L12 6.4 L16 8 V13 C16 16 14 18 12 19.2" fill="none" stroke="#fff3c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/></g>`;
+const rxEnv=`<g transform="rotate(-7 60 72)"><rect x="45" y="62" width="30" height="20" rx="3" fill="#fff" stroke="#1d4ed8" stroke-width="2.2"/><path d="M45.8 63.4 L60 74 L74.2 63.4" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linejoin="round"/><circle cx="60" cy="74" r="3" fill="#f5b301" stroke="#9a6c00" stroke-width="1.2"/></g>`;
+function roxie(o={}){
+ return `<svg class="svg rxs" viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="114" rx="38" ry="5" fill="rgba(0,0,0,.16)"/>`+
+  `<g class="rx-tail">${rxBlobs([[91,100,7.5],[98,95,8],[103,87,7.5],[104.5,78.5,6.5]],RX.m)}</g>`+
+  rxBlobs([[60,91,24],[40,97,15],[80,97,15],[51,101,13],[69,101,13]],RX.f)+
+  `<circle cx="60" cy="97" r="12" fill="${RX.w}"/>`+
+  `<g>${rxBlobs([[47,108.5,8.5],[73,108.5,8.5]],RX.f)}<path d="M43.5 108 v4.5 M48 109.5 v3.5 M69 109.5 v3.5 M73.5 108 v4.5" stroke="${RX.l}" stroke-width="1.4" stroke-linecap="round" fill="none"/></g>`+
+  rxCollar+`<g class="rx-head">${rxHead(o)}${o.env?rxEnv:''}</g></svg>`}
+ART.roxie=roxie;ART.roxieHead=roxieHead;
+ART.padlock=()=>`<svg class="svg" viewBox="0 0 64 78" aria-hidden="true"><ellipse cx="32" cy="74" rx="25" ry="4" fill="rgba(0,0,0,.16)"/><path d="M17 38 V25 C17 7 47 7 47 25 V38" fill="none" stroke="#7d5a00" stroke-width="11" stroke-linecap="round"/><path d="M17 38 V25 C17 7 47 7 47 25 V38" fill="none" stroke="#f0c040" stroke-width="6.4" stroke-linecap="round"/><rect x="6" y="35" width="52" height="38" rx="10" fill="#f5b301" stroke="#9a6c00" stroke-width="2.6"/><path d="M13 43 C13 41 15 40 17 40 H47" fill="none" stroke="#ffe08a" stroke-width="3" stroke-linecap="round" opacity=".8"/><circle cx="32" cy="52" r="5.6" fill="#3b2a00"/><path d="M29.2 55 H34.8 L36.4 65 H27.6 Z" fill="#3b2a00"/><path class="glint" d="M56 10 l2.2 5.4 5.4 2.2 -5.4 2.2 -2.2 5.4 -2.2-5.4 -5.4-2.2 5.4-2.2z" fill="#fff3b0" stroke="#e0a800" stroke-width=".8"/></svg>`;
+function roxieHead(){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="9 8 102 88">${rxBlobs([[60,100,26]],RX.f)}${rxCollar}${rxHead({})}</svg>`}
 function visualFor(t,i){const k=kindOf(t);
  if(k.cat==='home')return h('span',{html:k.svg==='condo'?ART.condo():ART.house(ROOFS[Math.max(0,Object.keys(KIND).indexOf(k.id))%4]),style:'display:block'},);
  if(k.cat==='work')return h('span',{html:ART.shop(['#e0556b','#3b82c4','#2f9e73','#e0a03b'][(t.id.charCodeAt(t.id.length-1))%4],emojiOf(t)),style:'display:block'});
@@ -519,7 +600,7 @@ function openSheet(node,o={}){
  const was=sheetEl.classList.contains('open');
  if(was){sheetCtx.onClose=o.onClose}else{sheetCtx={opener:document.activeElement,onClose:o.onClose}}
  sheetEl.classList.toggle('tall',!!o.tall);setView(node,false);
- if(!was){appEl.inert=true;scrim.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>sheetEl.classList.add('open')));Snd.play('whoosh')}}
+ if(!was){hidePrompt();appEl.inert=true;scrim.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>sheetEl.classList.add('open')));Snd.play('whoosh')}}
 function setView(node,back){node.classList.toggle('back',!!back);sbody.replaceChildren(node);
  const f=$('[data-focus]',node)||$('h2',node);if(f){if(!f.matches('input,textarea,button'))f.setAttribute('tabindex','-1');setTimeout(()=>{try{f.focus({preventScroll:true})}catch(e){}},60)}}
 async function closeSheet(){
@@ -533,11 +614,12 @@ const closeBtn=()=>h('button',{class:'btn quiet','aria-label':'Close',onclick:()
 const simpleHead=(title,back)=>h('div',{class:'vh'},back?h('button',{class:'btn quiet','aria-label':'Back',onclick:back},'‹ Back'):null,h('h2',{id:'sheetTitle'},title),closeBtn());
 function ring(p,size=64,sw=8,col='var(--gold)'){const r=(size-sw)/2,c=2*Math.PI*r;return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg);flex:none" aria-hidden="true"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#dbe6f5" stroke-width="${sw}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p/100)}"/></svg>`}
 document.addEventListener('keydown',e=>{
+ if(e.key==='Tab'&&$('#done').classList.contains('on')&&!$('#confirm').classList.contains('on')){const f=$$('button',$('#done')),a=document.activeElement;if(e.shiftKey&&(a===f[0]||!f.includes(a))){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(a===f[f.length-1]||!f.includes(a))){e.preventDefault();f[0].focus()}}
  if(e.key==='Tab'&&sheetOpen()&&!$('#confirm').classList.contains('on')){const f=$$('button,input,textarea,[tabindex]:not([tabindex="-1"])',sheetEl).filter(x=>!x.disabled&&x.offsetParent);if(!f.length)return;
   const a=document.activeElement;if(e.shiftKey&&(a===f[0]||!sheetEl.contains(a))){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(a===f[f.length-1]||!sheetEl.contains(a))){e.preventDefault();f[0].focus()}}
- if(e.key==='Escape'){if($('#confirm').classList.contains('on'))return cfClose(false);if($('#banner').classList.contains('on'))return hideBanner();if(sheetOpen())closeSheet();else if(document.body.classList.contains('protect'))setProtect(false)}});
-let cfRes=null;function cfClose(v){$('#confirm').classList.remove('on');sheetEl.inert=false;if(cfRes){const r=cfRes;cfRes=null;r(v)}}
-function confirmBox(title,desc,yes){return new Promise(res=>{cfRes=res;$('#cfT').textContent=title;$('#cfD').textContent=desc;$('#cfYes').textContent=yes;sheetEl.inert=true;$('#confirm').classList.add('on');$('#cfNo').focus()})}
+ if(e.key==='Escape'){if($('#confirm').classList.contains('on'))return cfClose(false);if($('#banner').classList.contains('on'))return hideBanner();if($('#done').classList.contains('on'))return hideDone();if(sheetOpen())closeSheet();else if($('#rprompt').classList.contains('on'))hidePrompt();else if(document.body.classList.contains('protect'))setProtect(false)}});
+let cfRes=null;function cfClose(v){$('#confirm').classList.remove('on');sheetEl.inert=false;$('#done').inert=false;if(cfRes){const r=cfRes;cfRes=null;r(v)}}
+function confirmBox(title,desc,yes){return new Promise(res=>{cfRes=res;$('#cfT').textContent=title;$('#cfD').textContent=desc;$('#cfYes').textContent=yes;sheetEl.inert=true;$('#done').inert=true;$('#confirm').classList.add('on');$('#cfNo').focus()})}
 $('#cfYes').onclick=()=>cfClose(true);$('#cfNo').onclick=()=>cfClose(false);
 function toast(msg,o={}){const box=$('#toasts');while(box.children.length>2)box.firstChild.remove();let t;
  const gone=()=>{if(!t.isConnected)return;t.classList.add('out');setTimeout(()=>t.remove(),400)};
@@ -549,7 +631,7 @@ function burst(x,y,n=18){if(RM())return;const cols=['#f5b301','#1d4ed8','#4cc38a
   if(c)p.style.background=cols[i%cols.length];p.style.left=x+'px';p.style.top=y+'px';p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',(Math.sin(a)*d-50)+'px');p.style.setProperty('--r',(Math.random()*720-360)+'deg');
   p.style.animationDelay=Math.random()*.15+'s';$('#fx').append(p);setTimeout(()=>p.remove(),1700)}}
 function caption(text){const c=$('#cap');c.classList.remove('on');void c.offsetWidth;$('span',c).textContent=text;c.classList.add('on')}
-let banT;function showBanner(emoji,title,sub){$('#banE').textContent=emoji;$('#banH').textContent=title;$('#banP').textContent=sub;$('#banner').classList.add('on');appEl.inert=true;Snd.play('fanfare');buzz([40,60,40,60,120]);
+let banT;function showBanner(emoji,title,sub){hidePrompt();$('#banE').textContent=emoji;$('#banH').textContent=title;$('#banP').textContent=sub;$('#banner').classList.add('on');appEl.inert=true;Snd.play('fanfare');buzz([40,60,40,60,120]);
  const r=phone.getBoundingClientRect();burst(r.width/2,r.height*.4,30);setTimeout(()=>burst(r.width*.3,r.height*.5,18),350);setTimeout(()=>burst(r.width*.7,r.height*.5,18),600);setTimeout(()=>$('#banBtn').focus(),80);clearTimeout(banT);banT=setTimeout(hideBanner,9000)}
 function hideBanner(){if(!$('#banner').classList.contains('on'))return;$('#banner').classList.remove('on');if(!sheetOpen())appEl.inert=false}
 $('#banBtn').onclick=hideBanner;$('#banner').addEventListener('click',e=>{if(e.target.id==='banner')hideBanner()});
@@ -570,7 +652,7 @@ const flowerEls=new Map(),cloudEls=[];
 const CLOUDS=[[20,.9],[70,1.1],[120,.8],[170,1],[215,1.1],[265,.9],[320,1]];
 function worldSetup(){const cl=$('#clouds');CLOUDS.forEach(([a,s])=>{const c=h('div',{class:'cloud'});c.style.setProperty('--sc',s);c.style.scale=s;c.style.animationDelay=-a/10+'s';cl.append(c);cloudEls.push([c,a])});
  $('#t-shed').innerHTML=ART.shed();$('#chest').innerHTML=ART.chest()+'<span class="cnt">0</span><span class="nm">Vault</span><span class="shd"></span>';
- $('#hq').innerHTML=ART.hq()+'<span class="nm">Loomis HQ</span><span class="ub" id="ubHq"></span>';
+ $('#hq').innerHTML=ART.hq()+'<span class="nm">Loomis HQ</span><span class="ub" id="ubHq"></span><span class="rox hqr">'+ART.roxie()+'<span class="woof">Woof!</span></span>';
  const ch=$('#chest');ch.style.setProperty('--x',CHEST[0]+'px');ch.style.setProperty('--y',CHEST[1]+'px');ch.style.zIndex=CHEST[1];
  ch.onclick=()=>{Snd.play('tap');openVault()};$('#hq').onclick=()=>{Snd.play('tap');openChat()};
  $('#avatar').onclick=()=>{const a=$('#avatar');a.classList.remove('hop');void a.offsetWidth;a.classList.add('hop');Snd.play('pop');buzz(15)}}
@@ -627,7 +709,8 @@ function updateTop(){const n=S.things.length,i=levelIdx(n);$('#lvlN').textConten
  $('#sndBtn').textContent=S.soundOn?'🔊':'🔇';$('#sndBtn').setAttribute('aria-pressed',S.soundOn);$('#sndBtn').setAttribute('aria-label',S.soundOn?'Sound is on. Tap to turn off.':'Sound is off. Tap to turn on.');
  const sz=['A','A+','A++'][S.size],nm=['normal','large','extra large'][S.size];$('#szBtn').textContent=sz;$('#szBtn').setAttribute('aria-label',`Text size: ${nm}. Tap to change.`);
  $('#avEm').textContent=S.avatar;$('#avNm').textContent=S.name;$('#avatar').setAttribute('aria-label','You, '+S.name);document.documentElement.style.fontSize=[100,115,130][S.size]+'%';document.documentElement.dataset.sz=S.size;
- $('#addBtn').classList.toggle('pulse',!n);document.body.classList.toggle('dense',n>10)}
+ $('#addBtn').classList.toggle('pulse',!n);document.body.classList.toggle('dense',n>10);
+ const mb=$('#menuBtn');mb.classList.toggle('saved',isSaved());mb.setAttribute('aria-label',S.account?'Menu. World saved ✓ with your login.':S.savedWithoutLogin?'Menu. World saved ✓ with Loomis.':'Menu')}
 function refresh(holdId){syncThings(holdId);updateTop();updateHQ();revealOn();layout();renderQuest();renderStrip()}
 const REVEALS={house:'Your home rises from the ground!',drive:'A driveway appears!',garage:'A garage appears!',lake:'A lake appears!',pasture:'A pasture appears!',chest:'A treasure vault appears!',town:'A road leads to town!'};
 const IDS={lake:'#t-lake',pasture:'#t-pasture',drive:'#t-drive',garage:'#t-shed',chest:'#chest'};
@@ -648,7 +731,7 @@ async function doPlace(t){
  S.xp+=50;save();updateTop();renderQuest();{const r=$('#sring');r.classList.remove('bump');void r.offsetWidth;r.classList.add('bump')}await sleep(500);Snd.play('chime');
  const lv=levelIdx(S.things.length);if(lv>S.lvl){S.lvl=lv;save();await sleep(900);showBanner(LVL[lv][2],'Your world grew!','Welcome to '+LVL[lv][1]);}
  else if(lv<S.lvl){S.lvl=lv;save()}
- checkQuests()}
+ checkQuests();maybeSavePrompt()}
 function setProtect(on){document.body.classList.toggle('protect',on);$('#protBtn').setAttribute('aria-pressed',on);
  const B=on?[['👨‍👩‍👧','Whole family'],['🛡️','My plan'],['✓','Done']]:[['🧺','My stuff'],['+','Add'],['🛡️','Protect']];
  $('#stuffBtn').innerHTML=`<span class="i" aria-hidden="true">${B[0][0]}</span>${B[0][1]}`;$('#protBtn').innerHTML=`<span class="i" aria-hidden="true">${B[2][0]}</span>${B[2][1]}`;
@@ -728,7 +811,7 @@ function makeInput(q,ctx){const t=ctx.t,cur=t.ans[q.id],has=cur!==undefined&&cur
    return{el:h('div',null,h('div',{class:'step'},h('button',{class:'btn',type:'button','aria-label':'One year earlier',onclick:()=>bump(-1)},'−'),inp,h('button',{class:'btn',type:'button','aria-label':'One year later',onclick:()=>bump(1)},'+')),hintLine('Tap − or +, or type the year.')),
     get:()=>inp.value?+inp.value:null,err:()=>{const x=+inp.value;return x<q.min||x>q.max?`Please pick a year between ${q.min} and ${q.max}.`:''},focus:()=>inp.focus()}},
   yesno(){let v=has?cur:null;const bs=[['yes','Yes','👍'],['no','No','👎']].map(([k,l,e])=>h('button',{type:'button','aria-pressed':v===k,onclick:()=>{v=k;Snd.play('tap');buzz(8);bs.forEach((b,i)=>b.setAttribute('aria-pressed',['yes','no'][i]===v));tip()}},h('span',{'aria-hidden':'true'},e),l));
-   const tipBox=h('div',{'aria-live':'polite'});const tip=()=>{tipBox.replaceChildren(q.tip&&v?h('div',{class:'tip'},'💡 '+q.tip):'')};tip();
+   const tipBox=h('div',{'aria-live':'polite'});const tip=()=>{tipBox.replaceChildren(q.tip&&v?h('div',{class:'tip'},q.tip):'')};tip();
    return{el:h('div',null,h('div',{class:'yn',role:'group','aria-label':q.prompt},bs),tipBox),get:()=>v}},
   choice(){let v=has?cur:null;const opts=q.dyn?[S.name?`Mine (${S.name})`:'Mine',...S.things.filter(x=>x.kind==='person').map(nameOf)].map(l=>({v:l,l})):q.choices;
    const bs=opts.map(o=>h('button',{class:'chip',type:'button','aria-pressed':v===o.v,onclick:()=>{v=o.v;Snd.play('tap');bs.forEach((b,i)=>b.setAttribute('aria-pressed',opts[i].v===v))}},o.e?h('span',{'aria-hidden':'true'},o.e):null,o.l));
@@ -879,7 +962,7 @@ function viewBudget(){const B=S.budget,keys=Object.keys(planLines()),L=planLines
  const step=(d)=>{B.total=Math.max(0,B.total+d);save();Snd.play('coin');buzz(8);re()};
  const conv=p=>{if(B.period===p)return;const f=p==='year'?12:1/12;B.total=Math.round(B.total*f);keys.forEach(k=>B.lines[k]=Math.round((B.lines[k]||0)*f));Object.keys(B.lines).forEach(k=>{if(!keys.includes(k))B.lines[k]=Math.round(B.lines[k]*f)});B.period=p;save();Snd.play('tap');re()};
  const mx=Math.max(B.total,sum,1);
- const body=[h('p',{class:'q-help'},"Tell us what you'd like to spend. This is just information for your agent — not a price."),
+ const body=[h('p',{class:'q-help'},"Tell us what you'd like to spend. This is just information for your Loomis agent — not a price."),
   h('div',{class:'seg2',role:'group','aria-label':'Budget period'},...[['month','Monthly'],['year','Yearly']].map(([p,l])=>h('button',{type:'button','aria-pressed':B.period===p,'data-k':'p-'+p,onclick:()=>conv(p)},l))),
   h('div',{class:'tot'},h('button',{class:'btn','aria-label':'Lower total by 25 dollars','data-k':'tm',onclick:()=>step(-25)},'−'),tot,h('button',{class:'btn','aria-label':'Raise total by 25 dollars','data-k':'tp',onclick:()=>step(25)},'+')),
   h('div',{class:'coins',role:'status'},h('span',{class:'pile','aria-hidden':'true'},un>0?'🪙'.repeat(clamp(Math.ceil(un/Math.max(B.total,1)*10),1,10)):'✓'),h('b',null,un>=0?`Unassigned: ${money(un)}`:`Over by ${money(-un)}`)),
@@ -896,23 +979,30 @@ function viewBudget(){const B=S.budget,keys=Object.keys(planLines()),L=planLines
 function openBudget(){openSheet(viewBudget(),{tall:true})}
 
 /* ===================== chat with Loomis HQ ===================== */
+const RESP="Response times may vary — we'll get to you ASAP.";
+const LIC='Loomis Family Insurance Agency is licensed in New York and Pennsylvania.';
 let chatOpen=false;
 function addMsg(from,text){S.chat.push({from,text});save();const log=$('#msgs');
  if(log){$('.typing',log)&&$('.typing',log).remove();log.append(h('div',{class:'msg '+from},text));log.scrollTop=log.scrollHeight}
  if(from==='hq'&&!chatOpen){S.unread++;save();updateHQ();Snd.play('pop');buzz([20,30,20])}}
 function demoReply(kind){const log=$('#msgs');if(log){log.append(h('div',{class:'typing','aria-label':'Loomis is typing'},'• • •'));log.scrollTop=log.scrollHeight}
- const R={q:`Of course, ${S.name}! Type your question here and a Loomis agent will read it. (demo reply)`,call:`Yes! Tell us the best time to call and a Loomis agent will follow up. (demo reply)`,plan:`Thanks, ${S.name}! A Loomis agent will look over your plan and reach out soon. (demo reply)`,
-  quote:`Thanks, ${S.name}! A Loomis agent will look over your plan and reach out soon. (demo reply)`,def:`Thanks, ${S.name} — we got your message. Someone from our family agency will reply soon. (demo reply)`};
+ const plan=`Thanks, ${S.name}! Your Loomis agent will look over your plan and reach out. ${RESP} (demo reply)`;
+ const R={q:`Of course, ${S.name}! Type your question here and your Loomis agent will read it. (demo reply)`,call:`Yes! Tell us the best time to call and your Loomis agent will follow up. (demo reply)`,plan,quote:plan,
+  def:`Thanks, ${S.name} — we got your message. ${RESP} (demo reply)`};
  setTimeout(()=>addMsg('hq',R[kind]||R.def),kind==='quote'?2000:1700)}
 function openChat(){S.unread=0;S.visited=true;save();updateHQ();
  if(!S.chat.length){S.chat.push({from:'hq',text:`Hi ${S.name}! Welcome to Loomis HQ. Ask us anything, or request a quote when you're ready. (demo reply)`});save()}
  chatOpen=true;openSheet(viewChat(),{tall:true,onClose:()=>{chatOpen=false}});checkQuests()}
-function viewChat(){const send=txt=>{txt=txt.trim();if(!txt)return false;addMsg('me',txt);Snd.play('tap');demoReply(txt==='I have a question'?'q':txt==='Can you call me?'?'call':txt==='Please review my plan'?'plan':'def');return true};
- const inp=h('input',{class:'inp',type:'text',maxlength:300,placeholder:'Type a message…','aria-label':'Your message',autocomplete:'off'});
+function chatSend(txt){addMsg('me',txt);Snd.play('tap');demoReply(txt==='I have a question'?'q':txt==='Can you call me?'?'call':txt==='Please review my plan'?'plan':'def')}
+function viewChat(draft){const send=txt=>{txt=txt.trim();if(!txt)return false;
+  /* in the real app, messaging needs a saved world: route unsaved players through the Save sheet first */
+  if(needSave({why:'chat',back:()=>viewChat(txt),after:p=>{if(p==='login'){setView(viewChat());chatSend(txt)}else addMsg('me',txt)}}))return false;
+  chatSend(txt);return true};
+ const inp=h('input',{class:'inp',type:'text',maxlength:300,placeholder:'Type a message…','aria-label':'Your message',autocomplete:'off',value:draft||''});
  const go=()=>{if(send(inp.value))inp.value=''};inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
  const msgs=h('div',{class:'msgs',id:'msgs',role:'log','aria-label':'Conversation with Loomis','aria-live':'polite'},...S.chat.map(m=>h('div',{class:'msg '+m.from,style:'animation:none'},m.text)));setTimeout(()=>{msgs.scrollTop=msgs.scrollHeight},30);
  return h('div',{class:'view'},h('div',{class:'vh',style:'align-items:flex-start;padding-top:10px'},h('span',{'aria-hidden':'true',html:ART.hq(),style:'width:54px;flex:none;display:block'}),
-   h('div',{style:'flex:1;min-width:0;padding:0 4px'},h('h2',{id:'sheetTitle',style:'font-size:1.15rem;padding:0'},'Loomis Family Insurance Agency'),h('p',{class:'note',style:'line-height:1.3;margin-top:2px'},'A real person from our family agency will reply (prototype: demo replies)')),closeBtn()),
+   h('div',{style:'flex:1;min-width:0;padding:0 4px'},h('h2',{id:'sheetTitle',style:'font-size:1.15rem;padding:0'},'Loomis Family Insurance Agency'),h('p',{class:'note',style:'line-height:1.3;margin-top:2px'},h('span',null,RESP),' (prototype: demo replies)'),h('p',{class:'note',style:'line-height:1.3;margin-top:3px;font-size:.82rem'},LIC)),closeBtn()),
   h('div',{style:'padding:2px 14px 6px'},h('button',{class:'btn gold blk',onclick:()=>{Snd.play('tap');setView(viewQuote(()=>viewChat()))}},'📋 Request a quote')),msgs,
   h('div',{class:'chips',style:'padding:6px 14px 0;gap:8px'},...['I have a question','Can you call me?','Please review my plan'].map(c=>h('button',{class:'chip',type:'button',onclick:()=>send(c)},c))),
   h('div',{class:'chatin'},inp,h('button',{class:'send','aria-label':'Send message',onclick:go},'➤')))}
@@ -924,26 +1014,139 @@ function viewQuote(back){const P=pendingLines(),keys=Object.keys(P),sent=Object.
    h('p',{class:'note',style:'margin-top:8px'},B.lines[k]?`Budget you'd like: ${money(B.lines[k])} ${B.period==='month'?'a month':'a year'}`:'Budget: not set for this line'))),
   keys.length?null:h('p',{class:'tip'},sent?'Everything in your plan has already been sent. Change a plan on the Protect screen to send an update.':'Tap Protect, then tap something on your map to start a plan.'),
   sent&&keys.length?h('p',{class:'note'},`${sent} item${sent>1?'s were':' was'} sent earlier.`):null,
-  keys.length&&B.total?h('p',{class:'note'},`Total budget: ${money(B.total)} ${B.period==='month'?'a month':'a year'}`):null,planNote()];
+  keys.length&&B.total?h('p',{class:'note'},`Total budget: ${money(B.total)} ${B.period==='month'?'a month':'a year'}`):null,planNote(),
+  keys.length?h('p',{class:'note',style:'margin-top:10px'},h('span',null,RESP),' (prototype: nothing is really sent)'):null,h('p',{class:'note',style:'margin-top:6px'},LIC)];
+ const send=()=>{if(needSave({why:'quote',back:()=>viewQuote(back),after:p=>sendQuote({quiet:p==='noLogin'})}))return;sendQuote()};
  return shell({head:simpleHead('Request a quote',()=>{Snd.play('tap');back?setView(back(),true):closeSheet()}),body,
-  foot:keys.length?[h('button',{class:'btn pri blk',onclick:()=>sendQuote()},'✈️ Send to Loomis'),h('button',{class:'btn blk',onclick:()=>{Snd.play('tap');setView(viewBudget())}},'Change my budget')]:[h('button',{class:'btn pri blk',onclick:()=>closeSheet().then(()=>{if(!document.body.classList.contains('protect'))setProtect(true)})},'🛡️ Go to Protect')]})}
-async function sendQuote(){const P=pendingLines(),keys=Object.keys(P);if(!keys.length)return;
- Object.values(P).flat().forEach(x=>{x.t.req[x.c]=true});S.xp+=50;save();Snd.play('send');buzz([20,30,20,30,40]);
- await closeSheet();addMsg('me','📋 Quote request sent: '+keys.map(k=>LINES[k][0]).join(', '));await flyPlane();
+  foot:keys.length?[h('button',{class:'btn pri blk',onclick:send},'✉️ Send to Loomis'),h('button',{class:'btn blk',onclick:()=>{Snd.play('tap');setView(viewBudget())}},'Change my budget')]:[h('button',{class:'btn pri blk',onclick:()=>closeSheet().then(()=>{if(!document.body.classList.contains('protect'))setProtect(true)})},'🛡️ Go to Protect')]})}
+async function sendQuote(o={}){const P=pendingLines(),keys=Object.keys(P);if(!keys.length)return;
+ Object.values(P).flat().forEach(x=>{x.t.req[x.c]=true});S.xp+=50;save();
+ if(!o.quiet){Snd.play('send');buzz([20,30,20,30,40]);await closeSheet()}
+ addMsg('me','📋 Quote request sent: '+keys.map(k=>LINES[k][0]).join(', '));
+ if(o.quiet){syncThings();renderStrip();updateTop();return}
+ await carry('Roxie is taking your request to Loomis!','Roxie delivered your request to Loomis!');
  syncThings();renderStrip();updateTop();floatAt('+50 XP',...Object.values(rel($('#hq'))));demoReply('quote')}
-function flyPlane(){return new Promise(res=>{const fx=$('#fx'),pr=phone.getBoundingClientRect(),hq=$('#hq'),hb=hq.getBoundingClientRect();
- const A={x:pr.width/2,y:pr.height-70},Bp={x:hb.left-pr.left+hb.width/2,y:hb.top-pr.top+hb.height*.42},Cp={x:Bp.x-pr.width*.55,y:(A.y+Bp.y)/2-40};
- const land=()=>{hq.classList.add('wave','glow');setTimeout(()=>hq.classList.remove('wave','glow'),3600);Snd.play('chime');buzz([30,40,30]);burst(Bp.x,Bp.y,20);caption('Your request is on its way to Loomis!');setTimeout(res,500)};
- const pl=h('div',{class:'plane',html:'<svg viewBox="0 0 44 44"><path d="M3 22 L41 5 L31 39 L21 28 Z" fill="#fff" stroke="#1d4ed8" stroke-width="2.6" stroke-linejoin="round"/><path d="M21 28 L41 5" stroke="#1d4ed8" stroke-width="2.2"/></svg>'});fx.append(pl);
- if(RM()){pl.style.transform=`translate(${Bp.x}px,${Bp.y}px)`;pl.animate([{opacity:0},{opacity:1},{opacity:0}],{duration:900}).onfinish=()=>{pl.remove();land()};return}
- const key=[];for(let i=0;i<=30;i++){const u=i/30,x=(1-u)**2*A.x+2*(1-u)*u*Cp.x+u*u*Bp.x,y=(1-u)**2*A.y+2*(1-u)*u*Cp.y+u*u*Bp.y,dx=2*(1-u)*(Cp.x-A.x)+2*u*(Bp.x-Cp.x),dy=2*(1-u)*(Cp.y-A.y)+2*u*(Bp.y-Cp.y);
-  key.push({transform:`translate(${x}px,${y}px) rotate(${Math.atan2(dy,dx)*180/Math.PI}deg) scale(${1-.4*u})`,opacity:u>.93?.2:1,offset:u})}
- const trail=setInterval(()=>{const r=pl.getBoundingClientRect();const s=h('span',{class:'pt',style:`left:${r.left-pr.left+22}px;top:${r.top-pr.top+22}px;--dx:0px;--dy:14px;--r:0deg;font-size:12px`},'✨');fx.append(s);setTimeout(()=>s.remove(),1500)},110);
- pl.animate(key,{duration:2200,easing:'cubic-bezier(.45,.05,.4,1)',fill:'forwards'}).onfinish=()=>{clearInterval(trail);pl.remove();land()}})}
+/* Roxie trots the envelope to HQ in a string of happy hops, then does a hop beside HQ. Reduced motion: just fades. */
+function carry(goText,doneText){return new Promise(res=>{const fx=$('#fx'),pr=phone.getBoundingClientRect(),hq=$('#hq'),rx=$('.hqr',hq),rb=rx.getBoundingClientRect();
+ const B={x:rb.left-pr.left+rb.width/2,y:rb.top-pr.top+rb.height*.45},A={x:pr.width*.5,y:pr.height-84},Cp={x:A.x-pr.width*.38,y:(A.y+B.y)/2-20};
+ const sp=h('div',{class:'rox carry',html:ART.roxie({env:1})});fx.append(sp);rx.classList.add('away');caption(goText);
+ const land=()=>{sp.remove();rx.classList.remove('away','hop');void rx.offsetWidth;rx.classList.add('hop');hq.classList.add('wave','glow');setTimeout(()=>{hq.classList.remove('wave','glow');rx.classList.remove('hop')},3600);
+  Snd.play('chime');buzz([30,40,30]);burst(B.x,B.y,20);caption(doneText);setTimeout(res,600)};
+ if(RM()){sp.style.transform=`translate(${B.x}px,${B.y}px)`;sp.animate([{opacity:0},{opacity:1},{opacity:1},{opacity:0}],{duration:1000,fill:'forwards'}).onfinish=land;return}
+ const D=2900,H=5,N=100,pt=u=>({x:(1-u)**2*A.x+2*(1-u)*u*Cp.x+u*u*B.x,y:(1-u)**2*A.y+2*(1-u)*u*Cp.y+u*u*B.y}),key=[];
+ for(let i=0;i<=N;i++){const u=i/N,p=pt(u),ph=u*Math.PI*H,sn=Math.abs(Math.sin(ph)),sq=(1-sn)**10,sc=1.5-.5*u;
+  key.push({transform:`translate(${p.x}px,${p.y-sn*(36-16*u)*sc}px) rotate(${Math.cos(ph)*6}deg) scale(${sc*(1+.16*sq)},${sc*(1-.16*sq)})`,opacity:u<.05?u/.05:1,offset:u})}
+ for(let k=1;k<H;k++)setTimeout(()=>{const p=pt(k/H),s=h('span',{class:'pt',style:`left:${p.x}px;top:${p.y+8}px;--dx:0px;--dy:8px;--r:0deg;font-size:15px`},'🐾');fx.append(s);setTimeout(()=>s.remove(),1500);Snd.play('tap')},D*k/H);
+ sp.animate(key,{duration:D,easing:'linear',fill:'forwards'}).onfinish=land})}
+
+/* ===================== save my world: free login, or send it to Loomis ===================== */
+function isSaved(){return !!(S.account||S.savedWithoutLogin)}
+const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+const phoneDigits=v=>{const d=v.replace(/\D/g,'');return d.length===11&&d[0]==='1'?d.slice(1):d};
+const fmtPhone=v=>{let d=v.replace(/\D/g,'');if(d.length>10&&d[0]==='1')d=d.slice(1);d=d.slice(0,10);return d.length<4?(d?'('+d:''):d.length<7?`(${d.slice(0,3)}) ${d.slice(3)}`:`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`};
+const hintBox=()=>{const el=h('div',{'aria-live':'polite'});return{el,say(m,f){el.replaceChildren(h('div',{class:'hint',role:'alert'},m));Snd.play('hmm');f&&f.focus();return false}}};
+const lblInp=(id,label,inp)=>h('div',{class:'fld'},h('label',{for:id,class:'lbl'},label),inp);
+function qView(o){const n=o.n;return shell({head:h('div',{class:'vh'},h('button',{class:'btn quiet','aria-label':'Back',onclick:()=>{Snd.play('tap');o.back()}},'‹ Back'),
+  n?h('div',{class:'dots',role:'img','aria-label':`Step ${o.i+1} of ${n}`},...Array.from({length:n},(_,j)=>h('i',{class:j<o.i?'d':j===o.i?'c':''}))):h('div',{style:'flex:1'}),closeBtn()),
+  body:h('div',null,h('h2',{class:'q-title',id:'sheetTitle'},o.title),o.help?h('p',{class:'q-help'},o.help):h('div',{style:'height:10px'}),o.body),foot:o.foot})}
+const onEnter=(el,fn)=>{el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();fn()}})};
+/* the privacy promise: first screen of the Save sheet, and always reachable from the menu. Copy is final: do not strengthen it. */
+const PROMISE=[['🔒','We lock it up','Everything you tell us is encrypted and kept in a private, locked-down system. Photos of your home and valuables are never public.'],
+ ['🚫','We never sell it. Ever.',"We don't sell, rent or trade your information. No advertisers, no data brokers, no ad trackers inside your world."],
+ ['🤝','We share it only to get you insurance','When you ask for a quote, we send the insurance companies you choose only what they need to price it.'],
+ ['👀','Only your Loomis team can see it','Inside Loomis, only licensed staff can open your world, and they must pass a second security check to sign in.'],
+ ['🗑️',"It's yours",'See it, fix it or delete it any time. Ask us to erase it and we will, except the few records the law requires us to keep.'],
+ ['📣',"If something goes wrong, we'll tell you","Quickly and plainly, and we'll help you through it."]];
+const PFOOT="The services that run this app for us, like our secure database, handle your information under strict contracts. And like every insurance agency, we answer to the courts and to state insurance regulators in New York and Pennsylvania. That's the whole list.";
+const PCLOSE="We treat your information the way we'd treat our own family's.";
+function viewPromise(o){
+ return shell({head:h('div',{class:'vh'},o.back?h('button',{class:'btn quiet','aria-label':'Back',onclick:o.back},'‹ Back'):null,h('div',{style:'flex:1'}),closeBtn()),body:[
+  h('div',{class:'pp-hero','aria-hidden':'true'},h('span',{class:'rox',html:ART.roxie()}),h('span',{class:'padl',html:ART.padlock()})),
+  h('h2',{class:'pp-t',id:'sheetTitle'},'Your world is safe with us'),
+  h('p',{class:'rxc'},h('b',{class:'sr'},'Roxie says: '),"Before you save, here's our promise to you — in plain words."),
+  h('ul',{class:'plist'},...PROMISE.map(([e,t,d])=>h('li',{class:'pcard'},h('h3',null,h('span',{class:'e','aria-hidden':'true'},e),t),h('p',null,d)))),
+  h('p',{class:'pfoot'},PFOOT),h('p',{class:'pclose'},PCLOSE)],
+  foot:[h('button',{class:'btn pri blk',onclick:o.next},o.menu?'Close':"Sounds good — let's save my world"),h('button',{class:'btn quiet blk plink',onclick:()=>{Snd.play('tap');setView(viewFullNotice(o))}},'Read the full privacy notice')]})}
+function viewFullNotice(o){const back=()=>{Snd.play('tap');setView(viewPromise(o),true)};
+ return shell({head:simpleHead('(prototype) Privacy notice',back),body:h('p',{class:'rxc',style:'margin-top:8px'},'The full privacy notice is being finalized with our attorneys. It will match this promise word for word, and add the legal details.'),foot:h('button',{class:'btn pri blk',onclick:back},'Back to our promise')})}
+const promiseOf=ctx=>({back:ctx.back?()=>{Snd.play('tap');setView(ctx.back(),true)}:null,next:()=>{Snd.play('tap');setView(viewSaveChoice(ctx))}});
+function openSave(ctx={}){ctx.f=ctx.f||{name:'',phone:'',email:'',pref:'',note:''};const v=viewPromise(promiseOf(ctx));
+ if(sheetOpen()){sheetEl.classList.add('tall');setView(v)}else openSheet(v,{tall:true})}
+function needSave(ctx){if(isSaved())return false;openSave(ctx);return true}
+const SAYS={quote:"Before I carry your plan to Loomis, let's save your world first.",chat:"Before you message Loomis, let's save your world so we can find it again.",menu:"Want to keep your world? Pick whichever is easiest for you."};
+function viewSaveChoice(ctx){
+ return shell({head:simpleHead('Save my world',()=>{Snd.play('tap');setView(viewPromise(promiseOf(ctx)),true)}),body:[
+  h('div',{class:'rx-say'},h('span',{class:'rox','aria-hidden':'true',html:ART.roxie()}),h('div',{class:'bubble',role:'status'},SAYS[ctx.why]||SAYS.menu)),
+  h('div',{class:'stack',style:'margin-top:16px'},
+   h('button',{class:'opt pri',type:'button',onclick:()=>{Snd.play('tap');setView(viewEmail(ctx))}},h('span',{class:'tag'},'⭐ Recommended'),h('b',null,'Make a free login'),h('span',null,"Come back to your world anytime. We'll email you a 6-digit code — no password to remember.")),
+   h('button',{class:'opt',type:'button',onclick:()=>{Snd.play('tap');setView(viewNoLogin(ctx))}},h('b',null,'No thanks — just send it to Loomis'),h('span',null,"We'll save your world with Loomis and reach out to you."))),
+  h('p',{class:'note',style:'margin-top:16px'},'Your world is a plan, not insurance. (prototype) Privacy notice')]})}
+/* path A: free login (email, then a 6-digit code) */
+function viewEmail(ctx){const hint=hintBox(),inp=h('input',{class:'inp','data-focus':'',id:'sv-email',type:'email',inputmode:'email',autocomplete:'email',autocapitalize:'none',spellcheck:'false',maxlength:80,placeholder:'name@example.com',value:ctx.email||''});
+ const go=()=>{const v=inp.value.trim();if(!v)return hint.say('Please type your email so we know where to send the code.',inp);
+  if(!emailOk(v))return hint.say("That email doesn't look quite right. It needs an @ and a dot, like name@example.com.",inp);ctx.email=v;Snd.play('send');setView(viewCode(ctx))};onEnter(inp,go);
+ return qView({i:0,n:2,title:"What's your email?",help:"We'll email you a 6-digit code — no password to remember.",back:()=>setView(viewSaveChoice(ctx),true),body:[lblInp('sv-email','Your email',inp),hint.el],foot:h('button',{class:'btn pri blk',onclick:go},'Email me a code')})}
+function viewCode(ctx){const hint=hintBox(),inp=h('input',{class:'inp code','data-focus':'',id:'sv-code',type:'text',inputmode:'numeric',autocomplete:'one-time-code',pattern:'[0-9]*',maxlength:6,placeholder:'000000'});
+ inp.oninput=()=>{inp.value=inp.value.replace(/\D/g,'').slice(0,6)};
+ const go=()=>{if(inp.value.length<6)return hint.say(`Please type all 6 digits. You've typed ${inp.value.length} so far.`,inp);
+  S.account={email:ctx.email};save();updateTop();Snd.play('chime');buzz([20,30,20]);setView(viewSaved(ctx))};onEnter(inp,go);
+ return qView({i:1,n:2,title:'Type your 6-digit code',help:'We sent you a 6-digit code (prototype: type any 6 digits)',back:()=>setView(viewEmail(ctx),true),
+  body:[h('p',{class:'note',style:'margin:-6px 0 12px'},'Sent to '+ctx.email),lblInp('sv-code','6-digit code',inp),hint.el],
+  foot:[h('button',{class:'btn pri blk',onclick:go},'Confirm my code'),h('button',{class:'btn blk',onclick:()=>{Snd.play('pop');toast('A new code was sent (demo)')}},'Send me a new code')]})}
+function viewSaved(ctx){setTimeout(()=>{const r=$('.rox',sbody);if(r){const c=rel(r);burst(c.x,c.y,26)}},450);
+ const next=()=>{Snd.play('tap');addMsg('sys','💾 World saved — sign in anytime with your email.');ctx.after?ctx.after('login'):closeSheet().then(()=>toast('Saved ✓'))};
+ return shell({head:h('div',{class:'vh'},h('div',{style:'flex:1'}),closeBtn()),body:h('div',{class:'done-hero'},h('div',{class:'rox','aria-hidden':'true',style:'width:150px;margin:0 auto 6px',html:ART.roxie({happy:1})}),
+  h('h2',{id:'sheetTitle'},'Saved!'),h('p',null,'Sign in anytime with your email.'),h('p',{class:'note',style:'margin-top:8px'},ctx.email),h('p',{class:'plan-line',style:'margin-top:14px'},'Your world is a plan, not insurance.')),
+  foot:h('button',{class:'btn pri blk',onclick:next},'Continue')})}
+/* path B: no login, so the world goes to Loomis like a submitted form */
+function viewNoLogin(ctx){
+ return shell({head:simpleHead('Send it to Loomis',()=>{Snd.play('tap');setView(viewSaveChoice(ctx),true)}),body:[
+  h('div',{class:'rxc',style:'margin-top:6px'},"We'll save your world with Loomis and reach out to you. Without a login, you won't be able to open it again yourself — just call or message us and we'll pick up right where you left off."),
+  h('p',{class:'note',style:'margin-top:14px'},'Changed your mind? A free login only takes a minute.')],
+  foot:[h('button',{class:'btn pri blk',onclick:()=>{Snd.play('tap');setView(viewName(ctx))}},'I understand — continue'),h('button',{class:'btn blk',onclick:()=>{Snd.play('tap');setView(viewEmail(ctx))}},'Make a free login instead')]})}
+function viewName(ctx){const f=ctx.f,hint=hintBox(),inp=h('input',{class:'inp','data-focus':'',id:'sv-name',type:'text',autocomplete:'name',maxlength:60,placeholder:'First and last name',value:f.name});
+ const go=()=>{const v=inp.value.trim().replace(/\s+/g,' ');if(v.length<2)return hint.say('Please type your name so we know who to ask for.',inp);f.name=v;Snd.play('tap');setView(viewReach(ctx))};onEnter(inp,go);
+ return qView({i:0,n:4,title:"What's your full name?",help:'So we know who to ask for when we reach out.',back:()=>setView(viewNoLogin(ctx),true),body:[lblInp('sv-name','Full name',inp),hint.el],foot:h('button',{class:'btn pri blk',onclick:go},'Next')})}
+function viewReach(ctx){const f=ctx.f,hint=hintBox();
+ const ph=h('input',{class:'inp','data-focus':'',id:'sv-phone',type:'tel',inputmode:'tel',autocomplete:'tel',maxlength:17,placeholder:'(555) 123-4567',value:f.phone});ph.oninput=()=>{ph.value=fmtPhone(ph.value)};
+ const em=h('input',{class:'inp',id:'sv-mail',type:'email',inputmode:'email',autocomplete:'email',autocapitalize:'none',spellcheck:'false',maxlength:80,placeholder:'name@example.com',value:f.email});
+ const go=()=>{const p=ph.value.trim(),e=em.value.trim();
+  if(!p&&!e)return hint.say('Please add a phone number, an email, or both — whichever you like.',ph);
+  if(p&&phoneDigits(p).length!==10)return hint.say('That phone number needs 10 digits, including the area code. Fix it, or clear it and use just your email.',ph);
+  if(e&&!emailOk(e))return hint.say("That email doesn't look quite right. It needs an @ and a dot, like name@example.com. Fix it, or clear it and use just your phone.",em);
+  f.phone=p;f.email=e;Snd.play('tap');setView(viewPref(ctx))};onEnter(ph,go);onEnter(em,go);
+ return qView({i:1,n:4,title:'How can we reach you?',help:'A phone number, an email, or both — we only need one.',back:()=>{f.phone=ph.value.trim();f.email=em.value.trim();setView(viewName(ctx),true)},body:[lblInp('sv-phone','Phone (optional if you add an email)',ph),lblInp('sv-mail','Email (optional if you add a phone)',em),hint.el],foot:h('button',{class:'btn pri blk',onclick:go},'Next')})}
+const PREFS=[['call','📞','Call'],['text','💬','Text'],['email','✉️','Email']];
+function viewPref(ctx){const f=ctx.f,hint=hintBox(),ok=PREFS.filter(p=>p[0]==='email'?f.email:f.phone);
+ if(!ok.some(p=>p[0]===f.pref))f.pref=ok.length===1?ok[0][0]:'';
+ const bs=ok.map(([k,e,l])=>h('button',{class:'chip big',type:'button','aria-pressed':f.pref===k,onclick:()=>{f.pref=k;Snd.play('tap');buzz(8);bs.forEach((b,i)=>b.setAttribute('aria-pressed',ok[i][0]===f.pref))}},h('span',{'aria-hidden':'true'},e),l));
+ const go=()=>{if(!f.pref)return hint.say('Please pick one — how would you like us to reach out?');Snd.play('tap');setView(viewNote(ctx))};
+ return qView({i:2,n:4,title:"What's the best way to reach you?",help:'Pick the one you check most.',back:()=>setView(viewReach(ctx),true),body:[h('div',{class:'chips',role:'group','aria-label':'Best way to reach you'},bs),hint.el],foot:h('button',{class:'btn pri blk',onclick:go},'Next')})}
+function viewNote(ctx){const f=ctx.f,n=S.things.length,pl=Object.values(planLines()).flat().length;
+ const ta=h('textarea',{class:'inp ta','data-focus':'',id:'sv-note',rows:4,maxlength:300,placeholder:'For example: after 5 is the best time to reach me'},f.note);
+ const rows=[['Name',f.name],f.phone?['Phone',f.phone]:null,f.email?['Email',f.email]:null,['Best way',{call:'Call',text:'Text',email:'Email'}[f.pref]]].filter(Boolean);
+ return qView({i:3,n:4,title:"Anything you'd like us to know?",help:'Totally optional.',back:()=>{f.note=ta.value.trim();setView(viewPref(ctx),true)},body:[lblInp('sv-note','Your note (optional)',ta),
+  h('div',{class:'card',style:'margin-top:8px;box-shadow:none;border:2px solid var(--line)'},h('h3',null,"What we'll send"),h('p',{class:'note',style:'margin:4px 0 6px'},`Your world (${n} thing${n===1?'':'s'}${pl?`, ${pl} plan choice${pl===1?'':'s'}`:''}) and these details:`),
+   h('div',{class:'dl'},rows.map(([k,v])=>h('div',{class:'r'},h('span',{class:'k'},k),h('span',{class:'v'},v))))),
+  h('p',{class:'note',style:'margin-top:12px'},'Prototype: nothing is really sent. (prototype) Privacy notice')],
+  foot:[h('p',{class:'pfoot',style:'margin:0;text-align:center'},'Same promise: we never sell it, and we only use it to help you with insurance.'),h('button',{class:'btn pri blk',onclick:()=>{f.note=ta.value.trim();sendSaved(ctx)}},'✉️ Send to Loomis')]})}
+async function sendSaved(ctx){if(ctx.busy)return;ctx.busy=true;const f=ctx.f;
+ S.savedWithoutLogin={name:f.name,at:Date.now(),contact:{phone:f.phone,email:f.email,pref:f.pref,note:f.note}};save();Snd.play('send');buzz([20,30,20,30,40]);
+ await closeSheet();if(ctx.after)ctx.after('noLogin');addMsg('sys',"📋 World saved with Loomis — we'll reach out.");updateTop();syncThings();renderStrip();
+ await carry('Roxie is taking your world to Loomis!','Roxie delivered your world to Loomis!');showDone()}
+function showDone(){const d=$('#done');$('#doneRox').innerHTML=ART.roxie({happy:1});$('#doneP').textContent=RESP+' To see your world again, just call or message us.';$('#doneLic').textContent=LIC;
+ d.classList.add('on');appEl.inert=true;buzz([40,60,40]);const r=phone.getBoundingClientRect();burst(r.width/2,r.height*.3,26);setTimeout(()=>burst(r.width*.25,r.height*.42,14),300);setTimeout(()=>burst(r.width*.75,r.height*.42,14),500);setTimeout(()=>$('#doneBack').focus(),80)}
+function hideDone(){const d=$('#done');if(!d.classList.contains('on'))return;d.classList.remove('on');if(!sheetOpen())appEl.inert=false;updateTop();try{$('#chatBtn').focus({preventScroll:true})}catch(e){}}
+/* a gentle, once-only Roxie nudge after the 3rd thing */
+function maybeSavePrompt(){if(S.stage!=='world'||S.things.length<3||S.savePrompted||isSaved()||sheetOpen()||$('#banner').classList.contains('on'))return;S.savePrompted=true;save();
+ const el=$('#rprompt');el.replaceChildren(h('div',{class:'rx-say'},h('span',{class:'rox','aria-hidden':'true',html:ART.roxie()}),h('div',{class:'bubble'},`Nice, ${S.things.length} things already! Want me to save your world so you can come back to it?`)),
+  h('div',{class:'row'},h('button',{class:'btn pri',onclick:()=>{Snd.play('tap');hidePrompt();openSave({why:'menu'})}},'Save my world'),h('button',{class:'btn',onclick:()=>{Snd.play('tap');hidePrompt()}},'Not now')));
+ el.classList.add('on');document.body.classList.add('rp');Snd.play('pop')}
+function hidePrompt(){$('#rprompt').classList.remove('on');document.body.classList.remove('rp')}
 
 /* ===================== my stuff, vault, menu ===================== */
 function stuffRow(t,go){const st=shieldOf(t),fam=t.id==='fam';return h('button',{class:'mrow',type:'button',onclick:()=>{Snd.play('tap');go(t)}},h('span',{class:'e','aria-hidden':'true'},emojiOf(t)),
- h('span',{class:'t'},h('b',null,nameOf(t)),h('span',null,fam?'Umbrella and identity theft help':`${pctOf(t)}% complete`,h('span',{style:`display:inline-flex;align-items:center;gap:4px;font-weight:700;color:${st==='none'?'var(--mut)':'var(--pri)'}`},h('span',{html:shieldSVG(st),style:'display:inline-block'}),SWORD[st]))),h('span',{class:'go','aria-hidden':'true',style:'color:var(--pri);font-size:1.5rem'},'›'))}
+ h('span',{class:'t'},h('b',null,nameOf(t)),h('span',null,fam?'Umbrella, personal cyber and trip protection':`${pctOf(t)}% complete`,h('span',{style:`display:inline-flex;align-items:center;gap:4px;font-weight:700;color:${st==='none'?'var(--mut)':'var(--pri)'}`},h('span',{html:shieldSVG(st),style:'display:inline-block'}),SWORD[st]))),h('span',{class:'go','aria-hidden':'true',style:'color:var(--pri);font-size:1.5rem'},'›'))}
 const stuffGo=back=>t=>document.body.classList.contains('protect')?setView(viewCover(t,()=>setView(back(),true))):setView(viewDetail(t,()=>setView(back(),true)));
 function viewStuff(){const body=[],go=stuffGo(viewStuff);
  CATS.forEach(c=>{const l=S.things.filter(t=>kindOf(t).cat===c.id);if(l.length)body.push(h('div',{class:'gh'},h('span',{'aria-hidden':'true'},c.e),c.l+` (${l.length})`),...l.map(t=>stuffRow(t,go)))});
@@ -955,10 +1158,17 @@ function openVault(){const v=S.things.filter(t=>kindOf(t).cat==='valuables'),go=
  function viewVault(){return shell({head:simpleHead(`Vault (${v.length})`),body:[h('p',{class:'q-help'},'Your valuables are kept together in one chest.'),...v.map(t=>stuffRow(t,go)),v.length?null:h('p',{class:'tip'},'Nothing in the vault yet.')],
   foot:h('button',{class:'btn pri blk',onclick:()=>{closeSheet().then(()=>openAdd('valuables'))}},'+ Add a valuable')})}}
 function sw(label,on,fn){const b=h('button',{class:'tg-row',type:'button',role:'switch','aria-checked':on,onclick:()=>{on=!on;b.setAttribute('aria-checked',on);$('.tg',b).setAttribute('aria-checked',on);fn(on)}},h('span',null,label),h('span',{class:'tg','aria-checked':on}));return b}
-function openMenu(){openSheet(shell({head:simpleHead('Menu'),body:[
+function saveStatus(){
+ if(S.account)return h('div',{class:'card okc',role:'status'},h('b',{class:'hf'},'Saved ✓'),h('p',{class:'note'},`Signed in with ${S.account.email}. Sign in anytime with your email.`));
+ if(S.savedWithoutLogin)return h('div',{class:'card okc',role:'status'},h('b',{class:'hf'},'📋 Saved with Loomis'),h('p',{class:'note'},"We'll reach out. To see your world again, just call or message us. (Prototype: you can keep playing.)"));
+ return h('button',{class:'btn pri blk',style:'margin:4px 0 6px',onclick:()=>{Snd.play('tap');closeSheet().then(()=>openSave({why:'menu'}))}},'💾 Save my world')}
+const viewMenu=()=>shell({head:simpleHead('Menu'),body:[saveStatus(),
+  h('button',{class:'btn blk',style:'margin:2px 0 6px',onclick:()=>{Snd.play('tap');sheetEl.classList.add('tall');setView(viewPromise({menu:true,back:()=>{Snd.play('tap');sheetEl.classList.remove('tall');setView(viewMenu(),true)},next:()=>{Snd.play('tap');closeSheet()}}))}},'🔒 Our privacy promise'),
   sw('Reduce motion',S.reduce||RMq.matches,v=>{S.reduce=v;save();applyPrefs();Snd.play('tap');layout()}),sw('Sound',S.soundOn,v=>{S.soundOn=v;save();updateTop();Snd.play('tap')}),
-  h('div',{class:'card',style:'margin:14px 0;box-shadow:none;background:#f3f7ff'},h('b',{class:'hf'},'About this prototype'),h('p',{class:'note',style:'margin-top:4px'},'Everything stays on this device. Property lookups and agency replies are demo data, labeled as such. Nothing here is insurance.')),
-  h('button',{class:'btn dng blk',onclick:async()=>{if(await confirmBox('Start over?','This clears everything you added on this device.','Yes, start over')){reset();location.reload()}}},'Start over')]}),{})}
+  h('div',{class:'card',style:'margin:14px 0;box-shadow:none;background:#f3f7ff'},h('b',{class:'hf'},'About this prototype'),h('p',{class:'note',style:'margin-top:4px'},'Your world stays on this device, and nothing you send really reaches Loomis. The only thing that goes online is the optional VIN lookup, which asks the free U.S. government NHTSA database. Property lookups and Loomis replies are demo data, labeled as such. Nothing here is insurance.')),
+  h('button',{class:'btn dng blk',onclick:startOver},'Start over')]});
+const openMenu=()=>openSheet(viewMenu(),{});
+async function startOver(){if(await confirmBox('Start over?','This clears everything you added on this device.','Yes, start over')){reset();location.reload()}}
 
 /* ===================== quests ===================== */
 const QDONE={char:()=>S.stage==='world',home:()=>S.things.some(t=>kindOf(t).cat==='home'),people:()=>S.things.some(t=>t.kind==='person'),vehicle:()=>S.things.some(t=>kindOf(t).cat==='vehicles'),
@@ -973,9 +1183,9 @@ function startQuest(id){Snd.play('tap');({home:()=>openAdd('home'),people:()=>op
 function renderQuest(){const q=$('#quest');if(questBusy)return;q.classList.toggle('on',S.stage==='world');q.classList.toggle('min',S.qMin);
  const next=QUESTS.find(x=>!S.quests[x[0]]),done=QUESTS.filter(x=>S.quests[x[0]]).length;
  const tg=h('button',{class:'ibtn','aria-label':S.qMin?'Show quest details':'Hide quest details','aria-expanded':!S.qMin,onclick:()=>{S.qMin=!S.qMin;save();Snd.play('tap');renderQuest();layout()}},S.qMin?'▾':'▴');
- if(!next){q.replaceChildren(h('div',{class:'qrow'},h('div',{class:'qcheck','aria-hidden':'true'},'🏆'),h('div',{class:'qt'},h('b',null,'All starter quests done!'),h('span',null,`⭐ ${S.xp} XP · keep growing your world`)),tg));return}
+ if(!next){q.replaceChildren(h('div',{class:'qrow'},h('div',{class:'qcheck','aria-hidden':'true'},'🏆'),h('div',{class:'qt'},h('b',null,h('span',{class:'qrx','aria-hidden':'true',html:ART.roxieHead()}),'All starter quests done!'),h('span',null,`⭐ ${S.xp} XP · keep growing your world`)),tg));return}
  q.replaceChildren(h('div',{class:'qrow'},h('div',{class:'qt'},h('b',null,'Next: '+next[1]),h('span',null,next[2])),h('button',{class:'btn pri',style:'min-height:56px;padding:0 16px',onclick:()=>startQuest(next[0])},'Start'),tg),
-  h('div',{class:'qfoot'},`Quest ${done+1} of ${QUESTS.length} · ⭐ ${S.xp} XP`))}
+  h('div',{class:'qfoot'},h('span',{class:'qrx','aria-hidden':'true',html:ART.roxieHead()}),`Roxie's quest ${done+1} of ${QUESTS.length} · ⭐ ${S.xp} XP`))}
 
 /* ===================== screens + boot ===================== */
 const RMq=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -990,6 +1200,7 @@ function enterWorld(first){show('game');$('#world').classList.add('nt');S.lvl=le
 function wire(){
  document.addEventListener('pointerdown',()=>Snd.init(),{passive:true});document.addEventListener('keydown',()=>Snd.init(),{passive:true});
  $('#beginBtn').onclick=()=>{Snd.play('chime');buzz(15);startChar()};
+ $('#doneBack').onclick=()=>{Snd.play('tap');hideDone()};$('#doneNew').onclick=startOver;
  $('#charNext').onclick=()=>{const v=$('#nameIn').value.trim();if(!v){$('#charHint').replaceChildren(h('div',{class:'hint',role:'alert'},'Type any name you like — even just a nickname.'));Snd.play('hmm');$('#nameIn').focus();return}
   S.name=v;S.stage='world';save();Snd.play('whoosh');enterWorld(true)};
  $('#nameIn').onkeydown=e=>{if(e.key==='Enter')$('#charNext').click()};
@@ -1004,7 +1215,7 @@ function wire(){
  scrim.addEventListener('click',()=>closeSheet());
  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('#world');w.classList.add('nt');layout();requestAnimationFrame(()=>w.classList.remove('nt'))},80)});
  RMq.addEventListener&&RMq.addEventListener('change',applyPrefs)}
-function boot(){load();applyPrefs();worldSetup();wire();
+function boot(){load();applyPrefs();document.documentElement.style.setProperty('--rxh','url("data:image/svg+xml,'+encodeURIComponent(ART.roxieHead())+'")');$('#introRox').innerHTML=ART.roxie();worldSetup();wire();
  if(S.stage==='world'&&S.name)enterWorld(false);else if(S.stage==='char')startChar();else startIntro()}
 boot();
 </script>
