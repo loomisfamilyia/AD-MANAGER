@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "catalog:check": "node --experimental-strip-types scripts/catalog-to-markdown.ts",
     "test:rls": "node supabase/tests/rls.test.mjs",
-    "test": "npm run typecheck && npm run catalog:check && npm run test:rls"
+    "test": "npm run typecheck && npm run catalog:check && npm run test:rls",
+    "art:brief": "node --experimental-strip-types scripts/art-brief.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.0",
