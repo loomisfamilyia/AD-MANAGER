@@ -17,8 +17,9 @@ prototype. Production code will be built in the Lovable site's repository
 ## Try it first
 
 Open **[`prototype/index.html`](prototype/index.html)** on a phone. It's one
-self-contained file with no server and no network, and nothing you type
-leaves the device. Turn the sound on.
+self-contained file with no server. Nothing you type leaves the device,
+except a VIN you choose to "Look it up", which goes only to the free U.S.
+government (NHTSA) decoder. Turn the sound on.
 
 It's a feel sketch: emoji stand in for art, the sounds are synthesized, and
 the public-records card and the agency replies are labeled demo data.

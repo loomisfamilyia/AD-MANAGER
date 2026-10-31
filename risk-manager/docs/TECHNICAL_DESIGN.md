@@ -373,6 +373,11 @@ it's only as good as its lead data. The risk manager is a lead source:
   zones in use and animate a scale/translate to fit it in the safe area above
   the bottom bar.
 - **Growth:** ground radius = f(number of things), eased with a spring.
+- **Labels:** names stay at a readable size while the world zooms out, so in
+  a full world they will collide. Do collision avoidance after layout: when
+  two labels overlap, keep the higher-priority one (people > residences >
+  vehicles > everything else) and show the other on tap or focus. The
+  prototype only spaces its slots apart, which holds up to roughly 15 things.
 - **Reveals:** a registry keyed by zone — the first asset in the `water` zone
   plays `revealLake()`, and so on. "Already played" lives in `households.world`.
 - **Accessibility:** every thing is a `<button>` with a full label (*"Honda
