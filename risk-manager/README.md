@@ -1,3 +1,8 @@
+> **This folder has moved.** The Personal Risk Manager now lives in its own
+> repository, [`loomisfamilyia/Personal-risk-manager`](https://github.com/loomisfamilyia/Personal-risk-manager),
+> with this folder's full history. Make changes there; this copy is kept
+> only as a record and won't be updated.
+
 # Personal Risk Manager
 
 **Loomis Family Insurance Agency's client world.** A client logs in and finds
